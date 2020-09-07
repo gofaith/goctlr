@@ -81,11 +81,11 @@ func genRoutes(dir string, api *spec.ApiSpec) error {
 		}
 		var jwt string
 		if g.jwtEnabled {
-			jwt = fmt.Sprintf(", ngin.WithJwt(serverCtx.Config.%s.AccessSecret)", g.authName)
+			jwt = fmt.Sprintf(", rest.WithJwt(serverCtx.Config.%s.AccessSecret)", g.authName)
 		}
 		var signature string
 		if g.signatureEnabled {
-			signature = fmt.Sprintf(", ngin.WithSignature(serverCtx.Config.%s.Signature)", g.authName)
+			signature = fmt.Sprintf(", rest.WithSignature(serverCtx.Config.%s.Signature)", g.authName)
 		}
 		if err := gt.Execute(&builder, map[string]string{
 			"routes":    strings.TrimSpace(gbuilder.String()),
@@ -177,6 +177,15 @@ func getRoutes(api *spec.ApiSpec) ([]group, error) {
 				path:    r.Path,
 				handler: handler,
 			})
+		}
+
+		for _, annotation := range g.Annotations {
+			for k, v := range annotation.Properties {
+				if k == "jwt" {
+					groupedRoutes.jwtEnabled = true
+					groupedRoutes.authName = v
+				}
+			}
 		}
 		routes = append(routes, groupedRoutes)
 	}
