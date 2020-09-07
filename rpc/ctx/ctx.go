@@ -6,10 +6,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/console"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/gofaith/go-zero/core/logx"
+	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctl/util/console"
+	"github.com/gofaith/goctl/util/stringx"
 	"github.com/urfave/cli"
 )
 

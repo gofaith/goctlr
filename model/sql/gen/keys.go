@@ -3,8 +3,8 @@ package gen
 import (
 	"fmt"
 
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/parser"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/gofaith/goctl/model/sql/parser"
+	"github.com/gofaith/goctl/util/stringx"
 )
 
 type (

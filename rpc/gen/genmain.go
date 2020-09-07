@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/tools/goctl/rpc/parser"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
+	"github.com/gofaith/goctl/rpc/parser"
+	"github.com/gofaith/goctl/util"
 )
 
 const mainTemplate = `{{.head}}
@@ -20,8 +20,8 @@ import (
 
 	{{.imports}}
 
-	"github.com/tal-tech/go-zero/core/conf"
-	"github.com/tal-tech/go-zero/rpcx"
+	"github.com/gofaith/go-zero/core/conf"
+	"github.com/gofaith/go-zero/rpcx"
 	"google.golang.org/grpc"
 )
 

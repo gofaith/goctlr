@@ -1,6 +1,6 @@
 package config
 
-import "github.com/tal-tech/go-zero/core/logx"
+import "github.com/gofaith/go-zero/core/logx"
 
 type Config struct {
 	logx.LogConf

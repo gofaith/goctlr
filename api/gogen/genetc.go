@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"text/template"
 
-	"github.com/tal-tech/go-zero/tools/goctl/api/spec"
-	"github.com/tal-tech/go-zero/tools/goctl/api/util"
+	"github.com/gofaith/goctl/api/spec"
+	"github.com/gofaith/goctl/api/util"
 )
 
 const (

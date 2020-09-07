@@ -8,9 +8,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/tools/goctl/api/spec"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
+	"github.com/gofaith/go-zero/core/logx"
+	"github.com/gofaith/goctl/api/spec"
+	"github.com/gofaith/goctl/util"
 )
 
 func MaybeCreateFile(dir, subdir, file string) (fp *os.File, created bool, err error) {

@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/collection"
-	"github.com/tal-tech/go-zero/tools/goctl/rpc/parser"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
+	"github.com/gofaith/go-zero/core/collection"
+	"github.com/gofaith/goctl/rpc/parser"
+	"github.com/gofaith/goctl/util"
 )
 
 const (
@@ -18,7 +18,7 @@ import (
 
 	{{.imports}}
 
-	"github.com/tal-tech/go-zero/core/logx"
+	"github.com/gofaith/go-zero/core/logx"
 )
 
 type {{.logicName}} struct {

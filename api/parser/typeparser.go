@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/tal-tech/go-zero/tools/goctl/api/spec"
+	"github.com/gofaith/goctl/api/spec"
 )
 
 var (

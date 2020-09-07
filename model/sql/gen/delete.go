@@ -3,10 +3,10 @@ package gen
 import (
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/collection"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/template"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/gofaith/go-zero/core/collection"
+	"github.com/gofaith/goctl/model/sql/template"
+	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctl/util/stringx"
 )
 
 func genDelete(table Table, withCache bool) (string, error) {

@@ -7,10 +7,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/tal-tech/go-zero/tools/goctl/api/spec"
-	"github.com/tal-tech/go-zero/tools/goctl/api/util"
-	ctlutil "github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/vars"
+	"github.com/gofaith/goctl/api/spec"
+	"github.com/gofaith/goctl/api/util"
+	ctlutil "github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctl/vars"
 )
 
 const logicTemplate = `package logic

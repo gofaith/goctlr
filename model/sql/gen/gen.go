@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/parser"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/template"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/util/console"
-	"github.com/tal-tech/go-zero/tools/goctl/util/stringx"
+	"github.com/gofaith/goctl/model/sql/parser"
+	"github.com/gofaith/goctl/model/sql/template"
+	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctl/util/console"
+	"github.com/gofaith/goctl/util/stringx"
 )
 
 const (

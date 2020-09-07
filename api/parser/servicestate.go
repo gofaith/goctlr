@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/tal-tech/go-zero/tools/goctl/api/spec"
+	"github.com/gofaith/goctl/api/spec"
 )
 
 type serviceState struct {

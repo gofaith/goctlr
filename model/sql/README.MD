@@ -24,7 +24,7 @@ goctl model 为go-zero下的工具模块中的组件之一，目前支持识别m
     ```
     
 
-> 详情用法请参考[example](https://github.com/tal-tech/go-zero/tree/master/tools/goctl/model/sql/example)
+> 详情用法请参考[example](https://github.com/gofaith/go-zero/tree/master/tools/goctl/model/sql/example)
 
 
 * 生成代码示例
@@ -38,11 +38,11 @@ goctl model 为go-zero下的工具模块中的组件之一，目前支持识别m
     	"strings"
     	"time"
     
-    	"github.com/tal-tech/go-zero/core/stores/cache"
-    	"github.com/tal-tech/go-zero/core/stores/sqlc"
-    	"github.com/tal-tech/go-zero/core/stores/sqlx"
-    	"github.com/tal-tech/go-zero/core/stringx"
-    	"github.com/tal-tech/go-zero/tools/goctl/model/sql/builderx"
+    	"github.com/gofaith/go-zero/core/stores/cache"
+    	"github.com/gofaith/go-zero/core/stores/sqlc"
+    	"github.com/gofaith/go-zero/core/stores/sqlx"
+    	"github.com/gofaith/go-zero/core/stringx"
+    	"github.com/gofaith/goctl/model/sql/builderx"
     )
     
     var (

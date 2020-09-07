@@ -5,8 +5,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/tal-tech/go-zero/tools/goctl/util"
-	"github.com/tal-tech/go-zero/tools/goctl/vars"
+	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctl/vars"
 )
 
 func GenerateDockerfile(goFile string, args ...string) error {

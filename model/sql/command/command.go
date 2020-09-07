@@ -5,12 +5,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/collection"
-	"github.com/tal-tech/go-zero/core/logx"
-	"github.com/tal-tech/go-zero/core/stores/sqlx"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/gen"
-	"github.com/tal-tech/go-zero/tools/goctl/model/sql/model"
-	"github.com/tal-tech/go-zero/tools/goctl/util/console"
+	"github.com/gofaith/go-zero/core/collection"
+	"github.com/gofaith/go-zero/core/logx"
+	"github.com/gofaith/go-zero/core/stores/sqlx"
+	"github.com/gofaith/goctl/model/sql/gen"
+	"github.com/gofaith/goctl/model/sql/model"
+	"github.com/gofaith/goctl/util/console"
 	"github.com/urfave/cli"
 )
 

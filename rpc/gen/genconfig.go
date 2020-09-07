@@ -5,12 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/tal-tech/go-zero/tools/goctl/util"
+	"github.com/gofaith/goctl/util"
 )
 
 const configTemplate = `package config
 
-import "github.com/tal-tech/go-zero/rpcx"
+import "github.com/gofaith/go-zero/rpcx"
 
 type Config struct {
 	rpcx.RpcServerConf

@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/tal-tech/go-zero/core/stringx"
-	"github.com/tal-tech/go-zero/tools/goctl/util"
+	"github.com/gofaith/go-zero/core/stringx"
+	"github.com/gofaith/goctl/util"
 )
 
 const (
