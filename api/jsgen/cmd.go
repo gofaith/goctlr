@@ -2,6 +2,7 @@ package jsgen
 
 import (
 	"errors"
+	"io/ioutil"
 
 	"github.com/gofaith/goctl/api/parser"
 
@@ -18,11 +19,15 @@ func JsCommand(c *cli.Context) error {
 		return errors.New("missing -dir")
 	}
 
-	return JsGen(apiFile, dir)
+	b, e := ioutil.ReadFile(apiFile)
+	if e != nil {
+		return e
+	}
+	return JsGen(string(b), dir)
 }
 
-func JsGen(apiFile, dir string) error {
-	p, e := parser.NewParser(apiFile)
+func JsGen(apiStr, dir string) error {
+	p, e := parser.NewParserFromStr(apiStr)
 	if e != nil {
 		return e
 	}

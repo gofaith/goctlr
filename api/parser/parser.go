@@ -20,7 +20,11 @@ func NewParser(filename string) (*Parser, error) {
 	if err != nil {
 		return nil, err
 	}
-	info, body, service, err := MatchStruct(string(api))
+	return NewParserFromStr(string(api))
+}
+
+func NewParserFromStr(str string) (*Parser, error) {
+	info, body, service, err := MatchStruct(str)
 	if err != nil {
 		return nil, err
 	}
