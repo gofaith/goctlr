@@ -11,8 +11,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-var docDir = "doc"
-
 func DocCommand(c *cli.Context) error {
 	dir := c.String("dir")
 	if len(dir) == 0 {
@@ -24,10 +22,6 @@ func DocCommand(c *cli.Context) error {
 		return errors.New(fmt.Sprintf("dir %s not exist", dir))
 	}
 
-	err = os.RemoveAll(dir + "/" + docDir + "/")
-	if err != nil {
-		return err
-	}
 	for _, f := range files {
 		p, err := parser.NewParser(f)
 		if err != nil {
@@ -37,17 +31,7 @@ func DocCommand(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		index := strings.Index(f, dir)
-		if index < 0 {
-			continue
-		}
-		dst := dir + "/" + docDir + f[index+len(dir):]
-		index = strings.LastIndex(dst, "/")
-		if index < 0 {
-			continue
-		}
-		dir := dst[:index]
-		genDoc(api, dir, strings.Replace(dst[index+1:], ".api", ".md", 1))
+		genDoc(api, f)
 	}
 	return nil
 }

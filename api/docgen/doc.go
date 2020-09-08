@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"os"
 	"strconv"
 	"strings"
 
@@ -17,33 +18,37 @@ const (
 	markdownTemplate = `
 ### {{.index}}. {{.routeComment}}
 
-1. 路由定义
+路由： ` + "`" + `{{.uri}}` + "`" + `
 
-- Url: {{.uri}}
-- Method: {{.method}}
-- Request: {{.requestType}}
-- Response: {{.responseType}}
+方法： ` + "`" + `{{.method}}` + "`" + `
 
+请求体：
+{{.requestContent}}
 
-2. 类型定义 
+响应体：
 
 {{.responseContent}}  
 
 `
 )
 
-func genDoc(api *spec.ApiSpec, dir string, filename string) error {
-	fp, _, err := util.MaybeCreateFile(dir, "", filename)
-	if err != nil {
-		return err
+func genDoc(api *spec.ApiSpec, path string) error {
+	f, e := os.OpenFile(path+".md", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if e != nil {
+		return e
 	}
-	defer fp.Close()
+	defer f.Close()
 
 	var builder strings.Builder
 	for index, route := range api.Service.Routes {
 		routeComment, _ := util.GetAnnotationValue(route.Annotations, "doc", "summary")
 		if len(routeComment) == 0 {
 			routeComment = "N/A"
+		}
+
+		requestContent, e := requestBody(api, route)
+		if e != nil {
+			return e
 		}
 
 		responseContent, err := responseBody(api, route)
@@ -60,6 +65,7 @@ func genDoc(api *spec.ApiSpec, dir string, filename string) error {
 			"uri":             route.Path,
 			"requestType":     "`" + stringx.TakeOne(route.RequestType.Name, "-") + "`",
 			"responseType":    "`" + stringx.TakeOne(route.ResponseType.Name, "-") + "`",
+			"requestContent":  requestContent,
 			"responseContent": responseContent,
 		})
 		if err != nil {
@@ -68,8 +74,17 @@ func genDoc(api *spec.ApiSpec, dir string, filename string) error {
 
 		builder.Write(tmplBytes.Bytes())
 	}
-	_, err = fp.WriteString(strings.Replace(builder.String(), "&#34;", `"`, -1))
-	return err
+	_, e = f.WriteString(strings.Replace(builder.String(), "&#34;", `"`, -1))
+	return e
+}
+
+func requestBody(api *spec.ApiSpec, route spec.Route) (string, error) {
+	tps := util.GetLocalTypes(api, route)
+	value, err := gogen.BuildTypes(tps)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("\n```go\n%s\n```\n", value), nil
 }
 
 func responseBody(api *spec.ApiSpec, route spec.Route) (string, error) {
@@ -78,5 +93,5 @@ func responseBody(api *spec.ApiSpec, route spec.Route) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("\n\n```golang\n%s\n```\n", value), nil
+	return fmt.Sprintf("\n```go\n%s\n```\n", value), nil
 }
