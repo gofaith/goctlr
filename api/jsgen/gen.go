@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/iancoleman/strcase"
 	"github.com/gofaith/goctl/api/ktgen"
 	"github.com/gofaith/goctl/api/spec"
+	"github.com/iancoleman/strcase"
 )
 
 const (
@@ -60,9 +60,9 @@ func genBase(dir string, api *spec.ApiSpec) error {
 	if e != nil {
 		return e
 	}
-	path := filepath.Join(dir, "base_api.js")
+	path := filepath.Join(dir, "base.js")
 	if _, e := os.Stat(path); e == nil {
-		fmt.Println("base_api.js already exists , skipped it.")
+		fmt.Println("base.js already exists , skipped it.")
 		return nil
 	}
 
