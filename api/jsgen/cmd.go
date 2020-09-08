@@ -18,6 +18,10 @@ func JsCommand(c *cli.Context) error {
 		return errors.New("missing -dir")
 	}
 
+	return JsGen(apiFile, dir)
+}
+
+func JsGen(apiFile, dir string) error {
 	p, e := parser.NewParser(apiFile)
 	if e != nil {
 		return e
