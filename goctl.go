@@ -7,7 +7,6 @@ import (
 	"github.com/gofaith/go-zero/core/logx"
 	"github.com/gofaith/goctl/api/apigen"
 	"github.com/gofaith/goctl/api/dartgen"
-	"github.com/gofaith/goctl/api/docgen"
 	"github.com/gofaith/goctl/api/format"
 	"github.com/gofaith/goctl/api/gogen"
 	"github.com/gofaith/goctl/api/javagen"
@@ -69,15 +68,15 @@ var (
 					Action: validate.GoValidateApi,
 				},
 				{
-					Name:  "doc",
-					Usage: "generate doc files",
+					Name:  "md",
+					Usage: "generate markdown files",
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "dir",
 							Usage: "the target dir",
 						},
 					},
-					Action: docgen.DocCommand,
+					Action: mdgen.MdCommand,
 				},
 				{
 					Name:  "go",

@@ -1,4 +1,4 @@
-package docgen
+package mdgen
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func DocCommand(c *cli.Context) error {
+func MdCommand(c *cli.Context) error {
 	dir := c.String("dir")
 	if len(dir) == 0 {
 		return errors.New("missing -dir")
@@ -31,7 +31,7 @@ func DocCommand(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
-		genDoc(api, f)
+		genMd(api, f)
 	}
 	return nil
 }

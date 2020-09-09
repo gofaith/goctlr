@@ -1,4 +1,4 @@
-package docgen
+package mdgen
 
 import (
 	"bytes"
@@ -32,7 +32,7 @@ const (
 `
 )
 
-func genDoc(api *spec.ApiSpec, path string) error {
+func genMd(api *spec.ApiSpec, path string) error {
 	f, e := os.OpenFile(path+".md", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if e != nil {
 		return e
