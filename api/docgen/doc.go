@@ -40,6 +40,7 @@ func genDoc(api *spec.ApiSpec, path string) error {
 	defer f.Close()
 
 	var builder strings.Builder
+	builder.WriteString("# " + api.Info.Desc)
 	for index, route := range api.Service.Routes {
 		routeComment, _ := util.GetAnnotationValue(route.Annotations, "doc", "summary")
 		if len(routeComment) == 0 {
