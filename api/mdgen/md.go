@@ -18,6 +18,9 @@ const (
 	markdownTemplate = `
 ### {{.index}}. {{.routeComment}}
 
+
+{{.routeDesc}}
+
 路由： ` + "`" + `{{.uri}}` + "`" + `
 
 方法： ` + "`" + `{{.method}}` + "`" + `
@@ -47,6 +50,8 @@ func genMd(api *spec.ApiSpec, path string) error {
 			routeComment = "N/A"
 		}
 
+		routeDesc, _ := util.GetAnnotationValue(route.Annotations, "doc", "desc")
+
 		requestContent, responseContent, e := requestAndResponseBody(api, route)
 		if e != nil {
 			return e
@@ -57,6 +62,7 @@ func genMd(api *spec.ApiSpec, path string) error {
 		err := t.Execute(&tmplBytes, map[string]string{
 			"index":           strconv.Itoa(index + 1),
 			"routeComment":    routeComment,
+			"routeDesc":       routeDesc,
 			"method":          strings.ToUpper(route.Method),
 			"uri":             route.Path,
 			"requestType":     "`" + stringx.TakeOne(route.RequestType.Name, "-") + "`",
