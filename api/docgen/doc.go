@@ -46,19 +46,14 @@ func genDoc(api *spec.ApiSpec, path string) error {
 			routeComment = "N/A"
 		}
 
-		requestContent, e := requestBody(api, route)
+		requestContent, responseContent, e := requestAndResponseBody(api, route)
 		if e != nil {
 			return e
 		}
 
-		responseContent, err := responseBody(api, route)
-		if err != nil {
-			return err
-		}
-
 		t := template.Must(template.New("markdownTemplate").Parse(markdownTemplate))
 		var tmplBytes bytes.Buffer
-		err = t.Execute(&tmplBytes, map[string]string{
+		err := t.Execute(&tmplBytes, map[string]string{
 			"index":           strconv.Itoa(index + 1),
 			"routeComment":    routeComment,
 			"method":          strings.ToUpper(route.Method),
@@ -78,20 +73,15 @@ func genDoc(api *spec.ApiSpec, path string) error {
 	return e
 }
 
-func requestBody(api *spec.ApiSpec, route spec.Route) (string, error) {
-	tps := util.GetLocalTypes(api, route)
-	value, err := gogen.BuildTypes(tps)
+func requestAndResponseBody(api *spec.ApiSpec, route spec.Route) (string, string, error) {
+	rts, rpts := util.GetAllTypes(api, route)
+	r, err := gogen.BuildTypes(rts)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return fmt.Sprintf("\n```go\n%s\n```\n", value), nil
-}
-
-func responseBody(api *spec.ApiSpec, route spec.Route) (string, error) {
-	tps := util.GetLocalTypes(api, route)
-	value, err := gogen.BuildTypes(tps)
-	if err != nil {
-		return "", err
+	rp, e := gogen.BuildTypes(rpts)
+	if e != nil {
+		return "", "", e
 	}
-	return fmt.Sprintf("\n```go\n%s\n```\n", value), nil
+	return fmt.Sprintf("```go\n%s\n```", r), fmt.Sprintf("```go\n%s\n```", rp), nil
 }

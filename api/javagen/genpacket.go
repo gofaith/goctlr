@@ -105,9 +105,9 @@ func createWith(dir string, api *spec.ApiSpec, route spec.Route, packetName stri
 
 	var builder strings.Builder
 	var first bool
-	tps := apiutil.GetLocalTypes(api, route)
+	tps, tps2 := apiutil.GetLocalTypes(api, route)
 
-	for _, tp := range tps {
+	for _, tp := range append(tps, tps2...) {
 		if first {
 			first = false
 		} else {
@@ -148,9 +148,9 @@ func createWith(dir string, api *spec.ApiSpec, route spec.Route, packetName stri
 
 func getImports(api *spec.ApiSpec, route spec.Route, packetName string) string {
 	var builder strings.Builder
-	allTypes := apiutil.GetAllTypes(api, route)
+	allTypes, ts2 := apiutil.GetAllTypes(api, route)
 	sharedTypes := apiutil.GetSharedTypes(api)
-	for _, at := range allTypes {
+	for _, at := range append(allTypes, ts2...) {
 		for _, item := range sharedTypes {
 			if item.Name == at.Name {
 				fmt.Fprintf(&builder, "import com.xhb.logic.http.packet.%s.model.%s;\n", packetName, item.Name)

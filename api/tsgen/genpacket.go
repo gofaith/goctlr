@@ -37,8 +37,9 @@ func genHandler(dir, webApi, caller string, api *spec.ApiSpec, unwrapApi bool) e
 
 	var localTypes []spec.Type
 	for _, route := range api.Service.Routes {
-		rts := apiutil.GetLocalTypes(api, route)
+		rts, rts2 := apiutil.GetLocalTypes(api, route)
 		localTypes = append(localTypes, rts...)
+		localTypes = append(localTypes, rts2...)
 	}
 
 	var prefixForType = func(ty string) string {

@@ -48,15 +48,15 @@ func DecomposeType(t string) (result []string, err error) {
 	return
 }
 
-func GetAllTypes(api *spec.ApiSpec, route spec.Route) []spec.Type {
-	var rts []spec.Type
+func GetAllTypes(api *spec.ApiSpec, route spec.Route) ([]spec.Type, []spec.Type) {
+	var rts, rpts []spec.Type
 	types := api.Types
 	getTypeRecursive(route.RequestType, types, &rts)
-	getTypeRecursive(route.ResponseType, types, &rts)
-	return rts
+	getTypeRecursive(route.ResponseType, types, &rpts)
+	return rts, rpts
 }
 
-func GetLocalTypes(api *spec.ApiSpec, route spec.Route) []spec.Type {
+func GetLocalTypes(api *spec.ApiSpec, route spec.Route) ([]spec.Type, []spec.Type) {
 	sharedTypes := GetSharedTypes(api)
 	isSharedType := func(ty spec.Type) bool {
 		for _, item := range sharedTypes {
@@ -67,15 +67,22 @@ func GetLocalTypes(api *spec.ApiSpec, route spec.Route) []spec.Type {
 		return false
 	}
 
-	var rts = GetAllTypes(api, route)
+	var rts, rpts = GetAllTypes(api, route)
 
-	var result []spec.Type
+	var req []spec.Type
 	for _, item := range rts {
 		if !isSharedType(item) {
-			result = append(result, item)
+			req = append(req, item)
 		}
 	}
-	return result
+
+	var rp []spec.Type
+	for _, item := range rpts {
+		if !isSharedType(item) {
+			rp = append(rp, item)
+		}
+	}
+	return req, rp
 }
 
 func getTypeRecursive(ty spec.Type, allTypes []spec.Type, result *[]spec.Type) {
