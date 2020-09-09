@@ -70,7 +70,9 @@ func genMd(api *spec.ApiSpec, path string) error {
 
 		builder.Write(tmplBytes.Bytes())
 	}
-	_, e = f.WriteString(strings.Replace(builder.String(), "&#34;", `"`, -1))
+	s := strings.Replace(builder.String(), "&#34;", `"`, -1)
+	s = strings.ReplaceAll(s, "&#43;", "+")
+	_, e = f.WriteString(s)
 	return e
 }
 

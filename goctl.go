@@ -12,6 +12,7 @@ import (
 	"github.com/gofaith/goctl/api/javagen"
 	"github.com/gofaith/goctl/api/jsgen"
 	"github.com/gofaith/goctl/api/ktgen"
+	"github.com/gofaith/goctl/api/mdgen"
 	"github.com/gofaith/goctl/api/tsgen"
 	"github.com/gofaith/goctl/api/validate"
 	"github.com/gofaith/goctl/configgen"
