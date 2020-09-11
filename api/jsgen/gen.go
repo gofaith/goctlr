@@ -20,7 +20,11 @@ function apiRequest(method,uri,body,onOk,onFail,eventually){
         if(xhr.readyState==4){
             if(xhr.status==200){
                 if(onOk){
-                    onOk(JSON.parse(xhr.responseText));
+					if(xhr.responseText){
+						onOk(JSON.parse(xhr.responseText));
+					}else{
+						onOk();
+					}
                 }
             }else {
                 if(onFail){
