@@ -127,16 +127,16 @@ func writeType(writer io.Writer, tp spec.Type, types []spec.Type) error {
 		if err != nil {
 			return err
 		}
-		pm, err := member.GetPropertyName()
-		if err != nil {
-			return err
-		}
-		if !strings.Contains(pm, "_") {
-			if strings.Title(member.Name) != strings.Title(pm) {
-				fmt.Printf("type: %s, property name %s json tag illegal, "+
-					"should set json tag as `json:\"%s\"` \n", tp.Name, member.Name, util.Untitle(member.Name))
-			}
-		}
+		// pm, err := member.GetPropertyName()
+		// if err != nil {
+		// 	return err
+		// }
+		// if !strings.Contains(pm, "_") {
+		// 	if strings.Title(member.Name) != strings.Title(pm) {
+		// 		fmt.Printf("type: %s, property name %s json tag illegal, "+
+		// 			"should set json tag as `json:\"%s\"` \n", tp.Name, member.Name, util.Untitle(member.Name))
+		// 	}
+		// }
 		if err := writeProperty(writer, member.Name, tpString, member.Tag, member.GetComment(), 1); err != nil {
 			return err
 		}
