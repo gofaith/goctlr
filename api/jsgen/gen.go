@@ -54,6 +54,7 @@ function apiRequest(method,uri,body,onOk,onFail,eventually){
     }
 }`
 	apiTemplate = `{{with .Service}}{{range .Routes}}
+//{{.Summary}}
 function {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}req,{{end}}{{end}}onOk,onFail,eventually){
     apiRequest('{{upperCase .Method}}','{{.Path}}',{{with .RequestType}}{{if ne .Name ""}}req,{{end}}{{end}}onOk,onFail,eventually)
 }{{end}}{{end}}`

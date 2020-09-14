@@ -49,6 +49,7 @@ type (
 
 	Route struct {
 		Annotations  []Annotation
+		Summary      string
 		Method       string
 		Path         string
 		RequestType  Type
