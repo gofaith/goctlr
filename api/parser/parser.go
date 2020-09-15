@@ -37,8 +37,8 @@ func NewParserFromStr(str string) (*Parser, error) {
 	}, nil
 }
 
-func (p *Parser) Parse() (api *spec.ApiSpec, err error) {
-	api = new(spec.ApiSpec)
+func (p *Parser) Parse() (*spec.ApiSpec, error) {
+	api := new(spec.ApiSpec)
 	types, err := parseStructAst(p.st)
 	if err != nil {
 		return nil, err
