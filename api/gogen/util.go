@@ -22,10 +22,7 @@ func getParentPackage(dir string) (string, error) {
 	}
 
 	absDir = strings.ReplaceAll(absDir, `\`, `/`)
-	rootPath, hasGoMod := goctlutil.FindGoModPath(dir)
-	if hasGoMod {
-		return rootPath, nil
-	}
+	rootPath, _ := goctlutil.FindGoModPath(dir)
 
 	gopath := os.Getenv("GOPATH")
 	parent := path.Join(gopath, "src")
