@@ -37,8 +37,8 @@ func NewParserFromStr(str string) (*Parser, error) {
 	}, nil
 }
 
-func (p *Parser) Parse() (api *spec.ApiSpec, err error) {
-	api = new(spec.ApiSpec)
+func (p *Parser) Parse() (*spec.ApiSpec, error) {
+	api := new(spec.ApiSpec)
 	types, err := parseStructAst(p.st)
 	if err != nil {
 		return nil, err
@@ -48,14 +48,30 @@ func (p *Parser) Parse() (api *spec.ApiSpec, err error) {
 	st := newRootState(p.r, &lineNumber)
 	for {
 		st, err = st.process(api)
-		if err == io.EOF {
-			return api, p.validate(api)
-		}
 		if err != nil {
+			if err == io.EOF {
+				break
+			}
 			return nil, fmt.Errorf("near line: %d, %s", lineNumber, err.Error())
 		}
 		if st == nil {
-			return api, p.validate(api)
+			break
 		}
 	}
+
+	err = p.validate(api)
+	if err != nil {
+		return api, err
+	}
+
+	for i, r := range api.Service.Routes {
+		for _, a := range r.Annotations {
+			if a.Name == "doc" {
+				api.Service.Routes[i].Summary = a.Properties["summary"]
+				break
+			}
+		}
+	}
+
+	return api, nil
 }
