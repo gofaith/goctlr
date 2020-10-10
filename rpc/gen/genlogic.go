@@ -38,7 +38,7 @@ func New{{.logicName}}(ctx context.Context,svcCtx *svc.ServiceContext) *{{.logic
 `
 	logicFunctionTemplate = `{{if .hasComment}}{{.comment}}{{end}}
 func (l *{{.logicName}}) {{.method}} (in *{{.package}}.{{.request}}) (*{{.package}}.{{.response}}, error) {
-	// todo: add your logic here and delete this line
+	// TODO: add your logic here and delete this line
 	
 	return &{{.package}}.{{.response}}{}, nil
 }
