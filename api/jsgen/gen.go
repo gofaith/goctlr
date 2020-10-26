@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/gofaith/goctl/api/ktgen"
 	"github.com/gofaith/goctl/api/spec"
+	"github.com/gofaith/goctl/api/util"
 	"github.com/iancoleman/strcase"
 )
 
@@ -98,7 +98,7 @@ func genApi(dir string, api *spec.ApiSpec) error {
 	}
 	defer file.Close()
 
-	t, e := template.New("api").Funcs(ktgen.FuncsMap).Parse(apiTemplate)
+	t, e := template.New("api").Funcs(util.FuncsMap).Parse(apiTemplate)
 	if e != nil {
 		return e
 	}

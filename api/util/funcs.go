@@ -1,30 +1,63 @@
-package ktgen
+package util
 
 import (
 	"log"
+	"reflect"
 	"strings"
 	"text/template"
 
 	"github.com/iancoleman/strcase"
-	"github.com/gofaith/goctl/api/util"
 )
 
 var FuncsMap = template.FuncMap{
-	"lowCamelCase":    lowCamelCase,
+	"tagGet":          tagGet,
+	"lowCamelCase":    strcase.ToLowerCamel,
 	"routeToFuncName": routeToFuncName,
 	"parseType":       parseType,
 	"add":             add,
 	"upperCase":       upperCase,
+	"isDirectType":    isDirectType,
+	"isClassListType": isClassListType,
+	"getCoreType":     getCoreType,
 }
 
-func lowCamelCase(s string) string {
-	if len(s) < 1 {
-		return ""
+func isDirectType(s string) bool {
+	return isAtomicType(s) || isListType(s) && isAtomicType(getCoreType(s))
+}
+
+func isAtomicType(s string) bool {
+	switch s {
+	case "String", "int", "double", "bool":
+		return true
+	default:
+		return false
 	}
-	s = util.ToCamelCase(util.ToSnakeCase(s))
-	return util.ToLower(s[:1]) + s[1:]
 }
 
+func isListType(s string) bool {
+	return strings.HasPrefix(s, "List<")
+}
+
+func isClassListType(s string) bool {
+	return strings.HasPrefix(s, "List<") && !isAtomicType(getCoreType(s))
+}
+
+func getCoreType(s string) string {
+	if isAtomicType(s) {
+		return s
+	}
+	if isListType(s) {
+		s = strings.Replace(s, "List<", "", -1)
+		return strings.Replace(s, ">", "", -1)
+	}
+	return s
+}
+
+func tagGet(tag, k string) (reflect.Value, error) {
+	v, _ := TagLookup(tag, k)
+	out := strings.Split(v, ",")[0]
+	return reflect.ValueOf(out), nil
+}
 func routeToFuncName(method, path string) string {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
@@ -44,7 +77,7 @@ func parseType(t string) string {
 	}
 
 	if strings.HasPrefix(t, "map") {
-		tys, e := util.DecomposeType(t)
+		tys, e := DecomposeType(t)
 		if e != nil {
 			log.Fatal(e)
 		}

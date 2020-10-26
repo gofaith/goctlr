@@ -6,8 +6,9 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/iancoleman/strcase"
 	"github.com/gofaith/goctl/api/spec"
+	"github.com/gofaith/goctl/api/util"
+	"github.com/iancoleman/strcase"
 )
 
 const (
@@ -142,7 +143,7 @@ func genApi(dir, pkg string, api *spec.ApiSpec) error {
 	}
 	defer file.Close()
 
-	t, e := template.New("api").Funcs(FuncsMap).Parse(apiTemplate)
+	t, e := template.New("api").Funcs(util.FuncsMap).Parse(apiTemplate)
 	if e != nil {
 		return e
 	}
