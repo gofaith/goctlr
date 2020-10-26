@@ -13,7 +13,8 @@ var FuncsMap = template.FuncMap{
 	"tagGet":          tagGet,
 	"lowCamelCase":    strcase.ToLowerCamel,
 	"routeToFuncName": routeToFuncName,
-	"parseType":       parseType,
+	"toKtType":        toKtType,
+	"toDartType":      toDartType,
 	"add":             add,
 	"upperCase":       upperCase,
 	"isDirectType":    isDirectType,
@@ -27,7 +28,7 @@ func isDirectType(s string) bool {
 
 func isAtomicType(s string) bool {
 	switch s {
-	case "String", "int", "double", "bool":
+	case "string", "bool", "uint8", "uint16", "uint32", "uint", "uint64", "int8", "int16", "int32", "int", "int64", "float32", "float64":
 		return true
 	default:
 		return false
@@ -35,11 +36,11 @@ func isAtomicType(s string) bool {
 }
 
 func isListType(s string) bool {
-	return strings.HasPrefix(s, "List<")
+	return strings.Contains(s, "[]")
 }
 
 func isClassListType(s string) bool {
-	return strings.HasPrefix(s, "List<") && !isAtomicType(getCoreType(s))
+	return isListType(s) && !isAtomicType(getCoreType(s))
 }
 
 func getCoreType(s string) string {
@@ -47,8 +48,7 @@ func getCoreType(s string) string {
 		return s
 	}
 	if isListType(s) {
-		s = strings.Replace(s, "List<", "", -1)
-		return strings.Replace(s, ">", "", -1)
+		return s[len("[]"):]
 	}
 	return s
 }
@@ -58,6 +58,7 @@ func tagGet(tag, k string) (reflect.Value, error) {
 	out := strings.Split(v, ",")[0]
 	return reflect.ValueOf(out), nil
 }
+
 func routeToFuncName(method, path string) string {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
@@ -70,10 +71,10 @@ func routeToFuncName(method, path string) string {
 	return strings.ToLower(method) + strcase.ToCamel(path)
 }
 
-func parseType(t string) string {
+func toDartType(t string) string {
 	t = strings.Replace(t, "*", "", -1)
 	if strings.HasPrefix(t, "[]") {
-		return "List<" + parseType(t[2:]) + ">"
+		return "List<" + toDartType(t[2:]) + ">"
 	}
 
 	if strings.HasPrefix(t, "map") {
@@ -84,7 +85,38 @@ func parseType(t string) string {
 		if len(tys) != 2 {
 			log.Fatal("Map type number !=2")
 		}
-		return "Map<String," + parseType(tys[1]) + ">"
+		return "Map<" + toDartType(tys[0]) + "," + toDartType(tys[1]) + ">"
+	}
+
+	switch t {
+	case "string":
+		return "String"
+	case "int", "int32", "int64":
+		return "int"
+	case "float32", "float64":
+		return "double"
+	case "bool":
+		return "bool"
+	default:
+		return t
+	}
+}
+
+func toKtType(t string) string {
+	t = strings.Replace(t, "*", "", -1)
+	if strings.HasPrefix(t, "[]") {
+		return "List<" + toKtType(t[2:]) + ">"
+	}
+
+	if strings.HasPrefix(t, "map") {
+		tys, e := DecomposeType(t)
+		if e != nil {
+			log.Fatal(e)
+		}
+		if len(tys) != 2 {
+			log.Fatal("Map type number !=2")
+		}
+		return "Map<String," + toKtType(tys[1]) + ">"
 	}
 
 	switch t {

@@ -16,27 +16,42 @@ import (
 )
 
 const (
-	apiBaseTemplate = `import 'dart:convert';
+	apiBaseTemplate = `import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-final server = 'http://localhost:8080';
+final server = 'http://localhost';
 
-void apiRequest(String method, String uri, dynamic body, Function(String) onOk,
-	Function(String) onFail, Function() eventually) async {
+Future apiRequest(
+	String method,
+	String uri,
+	dynamic body,
+	Function(String) onOk,
+	Function(String) onFail,
+	Function() eventually) async {
 	final client = HttpClient();
 	final req = await client.openUrl(method, Uri.parse(server + uri));
 	req.headers.add('Content-Type', 'application/json');
 	if (body != null) {
 	req.write(jsonEncode(body));
 	}
+
 	final res = await req.close();
+
 	final buf = StringBuffer();
+	final completer = Completer<String>();
 	res.transform(utf8.decoder).listen((data) {
 	buf.write(data);
-	});
-	final str = buf.toString();
+	}, onError: (e) {
+	print(e);
+	}, onDone: () {
+	completer.complete(buf.toString());
+	}, cancelOnError: true);
+
+	final str = await completer.future;
 	if (res.statusCode == 200) {
 	if (onOk != null) {
+		print('ok');
 		onOk(str);
 	}
 	} else {
@@ -47,7 +62,7 @@ void apiRequest(String method, String uri, dynamic body, Function(String) onOk,
 		}
 	} catch (e) {
 		if (onFail != null) {
-		onFail(str);
+		onFail('${res.statusCode}:$str');
 		}
 	}
 	}
@@ -56,19 +71,18 @@ void apiRequest(String method, String uri, dynamic body, Function(String) onOk,
 	eventually();
 	}
 }
+	
 `
 	apiApiTemplate = `import 'dart:convert';
 import './base.dart';
-{{with .Service}}
 {{range .Types}}
 class {{.Name}} {
 	{{range .Members}}
 	/// {{.Comment}}
-	{{.Type}} {{lowCamelCase .Name}};
-	{{end}}
-	{{.Name}}({ {{range .Members}}
+	{{toDartType .Type}} {{lowCamelCase .Name}};{{end}}
+	{{.Name}}({{if ne 0 (len .Members)}}{ {{range .Members}}
 		this.{{lowCamelCase .Name}},{{end}}
-	});
+	}{{end}});
 	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) {
 		return {{.Name}}({{range .Members}}
 			{{lowCamelCase .Name}}: {{if isDirectType .Type}}jsonObject['{{tagGet .Tag "json"}}']{{else if isClassListType .Type}}(jsonObject['{{tagGet .Tag "json"}}'] as List<dynamic>)
@@ -84,15 +98,14 @@ class {{.Name}} {
 }
 {{end}}
 
-class {{.Name}} {
-	{{range .Routes}}
-	Future {{routeToFuncName .Path}}(
+class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
+	static Future {{routeToFuncName .Method .Path}}(
 		{{with .RequestType}}{{if ne .Name ""}}{{.Name}}{{else}}dynamic{{end}} req,{{end}}
-		Function({{with .ResponseType}}{{.Name}}{{end}}) onOk,
+		{Function({{with .ResponseType}}{{.Name}}{{end}}) onOk,
 		Function(String) onFail,
-		Function() eventually
+		Function() eventually}
 	) async {
-		await apiRequest({{upperCase .Method}}, '{{.Path}}',req,(data){
+		await apiRequest('{{upperCase .Method}}', '{{.Path}}',req,(data){
 			{{with .ResponseType}}{{if ne .Name ""}}
 			if (onOk != null){
 				final res = {{.Name}}.fromJson(jsonDecode(data));
@@ -100,8 +113,7 @@ class {{.Name}} {
 			}
 			{{end}}{{end}}
 		},onFail,eventually);
-	}
-	{{end}}
+	}{{end}}
 }
 {{end}}`
 )
