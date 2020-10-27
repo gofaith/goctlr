@@ -17,7 +17,6 @@ var (
 	ErrUnSupportType       = errors.New("unsupport type")
 	ErrUnSupportInlineType = errors.New("unsupport inline type")
 	interfaceExpr          = `interface{}`
-	objectM                = make(map[string]*spec.Type)
 )
 
 const (
@@ -56,12 +55,14 @@ func parseStructAst(golang string) ([]spec.Type, error) {
 	})
 	resp := make([]spec.Type, 0)
 	for _, item := range structs {
+
 		resp = append(resp, *item)
 	}
 	return resp, nil
 }
 
 func parseObject(structName string, obj *ast.Object) (*spec.Type, error) {
+	objectM := make(map[string]*spec.Type)
 	if data, ok := objectM[structName]; ok {
 		return data, nil
 	}
