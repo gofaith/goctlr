@@ -80,9 +80,9 @@ import com.google.gson.Gson
 
 object {{with .Info}}{{.Title}}{{end}}{
 	{{range .Types}}
-	data class {{.Name}}({{$length := (len .Members)}}{{range $i,$item := .Members}}
+	{{if eq 0 (len .Members)}}class {{.Name}} {} {{else}}data class {{.Name}}({{$length := (len .Members)}}{{range $i,$item := .Members}}
 		val {{with $item}}{{lowCamelCase .Name}}: {{toKtType .Type}}{{end}}{{if ne $i (add $length -1)}},{{end}}{{end}}
-	){{end}}
+	){{end}}{{end}}
 	{{with .Service}}
 	{{range .Routes}}suspend fun {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}
 		req:{{.Name}},{{end}}{{end}}
