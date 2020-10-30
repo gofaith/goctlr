@@ -316,6 +316,15 @@ var (
 			},
 		},
 		{
+			Name:  "format",
+			Usage: "format .api code",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name: "stdin",
+				},
+			},
+		},
+		{
 			Name:  "config",
 			Usage: "generate config json",
 			Flags: []cli.Flag{

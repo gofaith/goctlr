@@ -105,7 +105,7 @@ func toDartType(t string) string {
 func toKtType(t string) string {
 	t = strings.Replace(t, "*", "", -1)
 	if strings.HasPrefix(t, "[]") {
-		return "List<" + toKtType(t[2:]) + ">"
+		return "MutableList<" + toKtType(t[2:]) + ">"
 	}
 
 	if strings.HasPrefix(t, "map") {
@@ -116,7 +116,7 @@ func toKtType(t string) string {
 		if len(tys) != 2 {
 			log.Fatal("Map type number !=2")
 		}
-		return "Map<String," + toKtType(tys[1]) + ">"
+		return "MutableMap<String," + toKtType(tys[1]) + ">"
 	}
 
 	switch t {
