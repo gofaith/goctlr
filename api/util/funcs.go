@@ -137,7 +137,7 @@ func toKtType(t string) string {
 func toJavaType(t string) string {
 	t = strings.Replace(t, "*", "", -1)
 	if strings.HasPrefix(t, "[]") {
-		return "List<" + toKtType(t[2:]) + ">"
+		return "List<" + toJavaType(t[2:]) + ">"
 	}
 
 	if strings.HasPrefix(t, "map") {
@@ -148,18 +148,18 @@ func toJavaType(t string) string {
 		if len(tys) != 2 {
 			log.Fatal("Map type number !=2")
 		}
-		return "Map<String," + toKtType(tys[1]) + ">"
+		return "Map<String," + toJavaType(tys[1]) + ">"
 	}
 
 	switch t {
 	case "string":
 		return "String"
 	case "int", "int32", "int64":
-		return "int"
+		return "Integer"
 	case "float", "float32", "float64":
-		return "float"
+		return "Float"
 	case "bool":
-		return "boolean"
+		return "Boolean"
 	default:
 		return t
 	}

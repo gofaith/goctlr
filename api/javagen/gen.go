@@ -54,7 +54,7 @@ public class Base {
 		return buffer.toString();
 	}
 }`
-	apiTemplate=`package {{.Info.Desc}};
+	apiTemplate=`package {{with .Info}}{{.Desc}}{{end}};
 
 import com.google.gson.Gson;
 import java.util.ArrayList;
@@ -62,16 +62,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class {{.Info.Title}} {
+public class {{with .Info}}{{.Title}}{{end}} {
 	{{range .Types}}
-	public statis class {{.Name}} { {{range .Members}}
+	public static class {{.Name}} { {{range .Members}}
 		public {{toJavaType .Type}} {{lowCamelCase .Name}};{{end}}
 	}{{end}}
 	{{with .Service}}{{range .Routes}}
-	public static {{with .ResponseType}}{{if eq .Name ""}}void{{else}}{{.Name}}{{end}} {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}{{.Name}} request{{else}}{{end}}{{end}}) throws Exception {
+	public static {{with .ResponseType}}{{if eq .Name ""}}void{{else}}{{.Name}}{{end}}{{end}} {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}{{.Name}} request{{else}}{{end}}{{end}}) throws Exception {
 		String res = Base.request("{{.Method}}", "{{.Path}}", {{with .RequestType}}{{if ne .Name ""}}new Gson().toJson(request){{else}}null{{end}}{{end}});
-		{{with .ResponseType}}{{if ne .Name ""}}return new Gson().fromJson(res, Response.class);{{end}}{{end}}
-	}{{end}}{{end}}
+		{{with .ResponseType}}{{if ne .Name ""}}return new Gson().fromJson(res, {{.Name}}.class);{{end}}{{end}}
+	} {{end}}{{end}}
 }
 `
 )
