@@ -69,7 +69,7 @@ public class {{with .Info}}{{.Title}}{{end}} {
 	}{{end}}
 	{{with .Service}}{{range .Routes}}
 	public static {{with .ResponseType}}{{if eq .Name ""}}void{{else}}{{.Name}}{{end}}{{end}} {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}{{.Name}} request{{else}}{{end}}{{end}}) throws Exception {
-		String res = Base.request("{{.Method}}", "{{.Path}}", {{with .RequestType}}{{if ne .Name ""}}new Gson().toJson(request){{else}}null{{end}}{{end}});
+		String res = Base.request("{{upperCase .Method}}", "{{.Path}}", {{with .RequestType}}{{if ne .Name ""}}new Gson().toJson(request){{else}}null{{end}}{{end}});
 		{{with .ResponseType}}{{if ne .Name ""}}return new Gson().fromJson(res, {{.Name}}.class);{{end}}{{end}}
 	} {{end}}{{end}}
 }
