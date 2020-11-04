@@ -106,6 +106,10 @@ var (
 							Name:  "api",
 							Usage: "the api file",
 						},
+						cli.StringFlag{
+							Name:  "pkg",
+							Usage: "the package name",
+						},
 					},
 					Action: javagen.JavaCommand,
 				},
@@ -317,12 +321,24 @@ var (
 		},
 		{
 			Name:  "format",
-			Usage: "format .api code",
+			Usage: "format api files",
 			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "dir",
+					Usage: "the format target dir",
+				},
 				cli.BoolFlag{
-					Name: "stdin",
+					Name:     "iu",
+					Usage:    "ignore update",
+					Required: false,
+				},
+				cli.BoolFlag{
+					Name:     "stdin",
+					Usage:    "use stdin to input api doc content, press \"ctrl + d\" to send EOF",
+					Required: false,
 				},
 			},
+			Action: format.GoFormatApi,
 		},
 		{
 			Name:  "config",

@@ -14,6 +14,7 @@ var FuncsMap = template.FuncMap{
 	"lowCamelCase":    strcase.ToLowerCamel,
 	"routeToFuncName": routeToFuncName,
 	"toKtType":        toKtType,
+	"toJavaType":      toJavaType,
 	"toDartType":      toDartType,
 	"add":             add,
 	"upperCase":       upperCase,
@@ -128,6 +129,37 @@ func toKtType(t string) string {
 		return "Double"
 	case "bool":
 		return "Boolean"
+	default:
+		return t
+	}
+}
+
+func toJavaType(t string) string {
+	t = strings.Replace(t, "*", "", -1)
+	if strings.HasPrefix(t, "[]") {
+		return "List<" + toKtType(t[2:]) + ">"
+	}
+
+	if strings.HasPrefix(t, "map") {
+		tys, e := DecomposeType(t)
+		if e != nil {
+			log.Fatal(e)
+		}
+		if len(tys) != 2 {
+			log.Fatal("Map type number !=2")
+		}
+		return "Map<String," + toKtType(tys[1]) + ">"
+	}
+
+	switch t {
+	case "string":
+		return "String"
+	case "int", "int32", "int64":
+		return "int"
+	case "float", "float32", "float64":
+		return "float"
+	case "bool":
+		return "boolean"
 	default:
 		return t
 	}

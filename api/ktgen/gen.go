@@ -105,7 +105,7 @@ func genBase(dir, pkg string, api *spec.ApiSpec) error {
 	}
 	path := filepath.Join(dir, "Base.kt")
 	if _, e := os.Stat(path); e == nil {
-		fmt.Println("BaseApi.kt already exists, skipped it.")
+		fmt.Println("Base.kt already exists, skipped it.")
 		return nil
 	}
 
