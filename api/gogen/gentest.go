@@ -9,10 +9,11 @@ import (
 
 	"github.com/gofaith/goctl/api/spec"
 	"github.com/gofaith/goctl/api/util"
+	"github.com/iancoleman/strcase"
 )
 
 const (
-	testTemplate = `// +build itg
+	testTemplate = `
 
 package test
 
@@ -84,7 +85,7 @@ func genTest(dir string, api *spec.ApiSpec) error {
 			"baseDir":      baseDir,
 			"funcName":     getHandlerBaseName(handler),
 			"requestType":  route.RequestType.Name,
-			"apiFuncName":  util.RouteToFuncName(route.Method, route.Path),
+			"apiFuncName":  strcase.ToCamel(util.RouteToFuncName(route.Method, route.Path)),
 			"responseType": route.ResponseType.Name,
 		})
 		if e != nil {
