@@ -13,7 +13,7 @@ var FuncsMap = template.FuncMap{
 	"tagGet":          tagGet,
 	"lowCamelCase":    strcase.ToLowerCamel,
 	"camelCase":       strcase.ToCamel,
-	"routeToFuncName": routeToFuncName,
+	"routeToFuncName": RouteToFuncName,
 	"toKtType":        toKtType,
 	"toJavaType":      toJavaType,
 	"toDartType":      toDartType,
@@ -61,7 +61,7 @@ func tagGet(tag, k string) (reflect.Value, error) {
 	return reflect.ValueOf(out), nil
 }
 
-func routeToFuncName(method, path string) string {
+func RouteToFuncName(method, path string) string {
 	if !strings.HasPrefix(path, "/") {
 		path = "/" + path
 	}
