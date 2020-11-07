@@ -13,9 +13,7 @@ import (
 )
 
 const (
-	testTemplate = `
-
-package test
+	testTemplate = `package test
 
 import (
 	"{{.baseDir}}/client"
