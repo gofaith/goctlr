@@ -12,6 +12,7 @@ import (
 var FuncsMap = template.FuncMap{
 	"tagGet":          tagGet,
 	"lowCamelCase":    strcase.ToLowerCamel,
+	"camelCase":       strcase.ToCamel,
 	"routeToFuncName": routeToFuncName,
 	"toKtType":        toKtType,
 	"toJavaType":      toJavaType,

@@ -13,12 +13,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/gofaith/go-zero/core/logx"
 	apiformat "github.com/gofaith/goctl/api/format"
 	"github.com/gofaith/goctl/api/parser"
 	apiutil "github.com/gofaith/goctl/api/util"
 	"github.com/gofaith/goctl/util"
+	"github.com/logrusorgru/aurora"
 	"github.com/urfave/cli"
 )
 
@@ -54,6 +54,7 @@ func GoCommand(c *cli.Context) error {
 	logx.Must(genHandlers(dir, api))
 	logx.Must(genRoutes(dir, api))
 	logx.Must(genLogic(dir, api))
+	logx.Must(genClient(dir, api))
 	// it does not work
 	format(dir)
 	createGoModFileIfNeed(dir)
