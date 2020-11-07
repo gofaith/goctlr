@@ -42,6 +42,11 @@ func NewClient() *Client {
 	}
 }
 
+func (c *Client) Ping() bool {
+	_, e := http.Get(c.Server)
+	return e == nil
+}
+
 func (c *Client) request(method, path string, body interface{}) ([]byte, error) {
 	cli := http.Client{
 		Timeout: time.Second,

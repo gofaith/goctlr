@@ -17,12 +17,16 @@ const (
 
 import (
 	"{{.baseDir}}/client"
-	"{{.baseDir}}/internal/types"
-	"testing"
+	{{if ne .requestType ""}}"{{.baseDir}}/internal/types"
+	{{end}}"testing"
 )
 
 func Test_{{.funcName}}(t *testing.T) {
-	cli := client.NewClient(){{if ne .requestType ""}}
+	cli := client.NewClient()
+	if !cli.Ping() {
+		return
+	}{{if ne .requestType ""}}
+	
 	req := types.{{.requestType}}{}{{end}}
 	{{if ne .responseType ""}}_, {{end}}e := cli.{{.apiFuncName}}({{if ne .requestType ""}}req{{end}})
 	if e != nil {
