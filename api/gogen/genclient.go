@@ -31,7 +31,11 @@ type Client struct {
 	Header map[string]string
 }
 
-func NewClient(server string) *Client {
+var (
+	server = "http://localhost:8080"
+)
+
+func NewClient() *Client {
 	return &Client{
 		Server: server,
 		Header: make(map[string]string),
