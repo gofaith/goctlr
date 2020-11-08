@@ -47,7 +47,7 @@ func (c *Client) Ping() bool {
 	return e == nil
 }
 
-func (c *Client) request(method, path string, body interface{}) ([]byte, error) {
+func (c *Client) Request(method, path string, body interface{}) ([]byte, error) {
 	cli := http.Client{
 		Timeout: time.Second,
 	}
@@ -102,7 +102,7 @@ import (
 )
 {{with .Service}}{{range .Routes}}
 func (c *Client) {{camelCase (routeToFuncName .Method .Path)}}({{with .RequestType}}{{if ne .Name ""}}request types.{{.Name}}{{end}}{{end}}) {{with .ResponseType}}{{if ne .Name ""}}(*types.{{.Name}}, error){{else}}error{{end}}{{end}} {
-	{{with .ResponseType}}{{if ne .Name ""}}res{{else}}_{{end}}{{end}}, e := c.request("{{upperCase .Method}}", "{{.Path}}", {{with .RequestType}}{{if ne .Name ""}}request{{else}}nil{{end}}{{end}})
+	{{with .ResponseType}}{{if ne .Name ""}}res{{else}}_{{end}}{{end}}, e := c.Request("{{upperCase .Method}}", "{{.Path}}", {{with .RequestType}}{{if ne .Name ""}}request{{else}}nil{{end}}{{end}})
 	if e != nil {
 		logx.Error(e)
 		return {{with .ResponseType}}{{if ne .Name ""}}nil, {{end}}{{end}}e
