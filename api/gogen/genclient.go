@@ -54,12 +54,16 @@ func (c *Client) Request(method, path string, body interface{}) ([]byte, error) 
 
 	var reader io.Reader
 	if body != nil {
-		b, e := json.Marshal(body)
-		if e != nil {
-			logx.Error(e)
-			return nil, e
+		if s, ok := body.(string); ok {
+			reader = strings.NewReader(s)
+		} else {
+			b, e := json.Marshal(body)
+			if e != nil {
+				logx.Error(e)
+				return nil, e
+			}
+			reader = bytes.NewReader(b)
 		}
-		reader = bytes.NewReader(b)
 	}
 	req, e := http.NewRequest(method, c.Server+path, reader)
 	if e != nil {
