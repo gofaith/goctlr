@@ -45,8 +45,13 @@ export function apiRequest(method,uri,body,onOk,onFail,eventually){
     xhr.setRequestHeader('Cookies',document.cookie)
     if(body){
         if (typeof body == 'string'){
-            xhr.send(body)
+			xhr.setRequestHeader('Content-Type','application/json')
+			xhr.send(body)
+		}else if (body instanceof File){
+			xhr.setRequestHeader('Content-Type',body.type)
+			xhr.send(body)
         }else{
+			xhr.setRequestHeader('Content-Type','application/json')
             xhr.send(JSON.stringify(body))
         }
     }else{
