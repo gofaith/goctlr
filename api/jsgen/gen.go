@@ -41,7 +41,6 @@ export function apiRequest(method,uri,body,onOk,onFail,eventually){
         }
     }
     xhr.open(method,server+uri,true)
-    xhr.setRequestHeader('Content-Type','application/json')
     xhr.setRequestHeader('Cookies',document.cookie)
     if(body){
         if (typeof body == 'string'){
