@@ -91,8 +91,8 @@ func (c *Client) Request(method, path string, body interface{}) ([]byte, error) 
 	if res.StatusCode == 200 {
 		return b, nil
 	}
-
-	return nil, errors.New(string(b))
+	
+	return nil, errors.New(res.Status + ":" + string(b))
 }
 `
 	apiTemplate = `package client
