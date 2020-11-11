@@ -41,10 +41,10 @@ func {{camelCase .funcName}}(t *testing.T) {
 import (
 	"testing"
 )
-
+{{range .}}
 func Test_{{.funcName}}(t *testing.T) {
 	{{camelCase .funcName}}(t)
-}
+}{{end}}
 `
 )
 
@@ -61,17 +61,23 @@ func genTest(dir string, api *spec.ApiSpec) error {
 	}
 
 	baseDir := getImport(dir)
+
+	testFiles := make(map[string][]map[string]interface{})
 	// range routes
 	for _, route := range api.Service.Routes {
 		handler, ok := util.GetAnnotationValue(route.Annotations, "server", "handler")
 		if !ok {
 			return fmt.Errorf("missing handler annotation for %q", route.Path)
 		}
-		group, _ := util.GetAnnotationValue(route.Annotations, "server", "folder")
+		group, ok := util.GetAnnotationValue(route.Annotations, "server", "folder")
 
 		// basic file
 		filename := strings.ToLower(group+getHandlerBaseName(handler)) + ".go"
 		filePath := filepath.Join(testDir, filename)
+		if ok {
+			os.MkdirAll(filepath.Join(testDir, group), 0755)
+			filePath = filepath.Join(testDir, group, filename)
+		}
 
 		_, e = os.Stat(filePath)
 		if os.IsNotExist(e) {
@@ -98,30 +104,24 @@ func genTest(dir string, api *spec.ApiSpec) error {
 		}
 
 		// test file
-		testFilename := strings.ToLower(group+getHandlerBaseName(handler)) + "_test.go"
-		testFilePath := filepath.Join(testDir, testFilename)
-		_, e = os.Stat(testFilePath)
-		if os.IsNotExist(e) {
-			file, e := os.OpenFile(testFilePath, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0644)
-			if e != nil {
-				return e
-			}
-			defer file.Close()
+		testFiles[group] = append(testFiles[group], map[string]interface{}{
+			"funcName": group + strcase.ToCamel(getHandlerBaseName(handler)),
+		})
+	}
 
-			t, e := template.New(testFilename).Funcs(util.FuncsMap).Parse(test_testTemplate)
-			if e != nil {
-				return e
-			}
-			e = t.Execute(file, map[string]interface{}{
-				"baseDir":      baseDir,
-				"funcName":     group + strcase.ToCamel(getHandlerBaseName(handler)),
-				"requestType":  route.RequestType.Name,
-				"apiFuncName":  strcase.ToCamel(util.RouteToFuncName(route.Method, route.Path)),
-				"responseType": route.ResponseType.Name,
-			})
-			if e != nil {
-				return e
-			}
+	for group, vs := range testFiles {
+		file, e := os.OpenFile(filepath.Join(testDir, group, group+"_test.go"), os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+		if e != nil {
+			return e
+		}
+		defer file.Close()
+		t, e := template.New(group + "_test.go").Funcs(util.FuncsMap).Parse(test_testTemplate)
+		if e != nil {
+			return e
+		}
+		e = t.Execute(file, vs)
+		if e != nil {
+			return e
 		}
 	}
 	return nil
