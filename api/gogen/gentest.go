@@ -33,6 +33,7 @@ func {{camelCase .funcName}}(t *testing.T) {
 		t.Error(e)
 		return
 	}
+	// TODO test code
 }
 `
 	test_testTemplate = `package test
