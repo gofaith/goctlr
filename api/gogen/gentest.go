@@ -72,7 +72,7 @@ func genTest(dir string, api *spec.ApiSpec) error {
 		group, ok := util.GetAnnotationValue(route.Annotations, "server", "folder")
 
 		// basic file
-		filename := strings.ToLower(group+getHandlerBaseName(handler)) + ".go"
+		filename := strings.ToLower(getHandlerBaseName(handler)) + ".go"
 		filePath := filepath.Join(testDir, filename)
 		if ok {
 			os.MkdirAll(filepath.Join(testDir, group), 0755)
@@ -93,7 +93,7 @@ func genTest(dir string, api *spec.ApiSpec) error {
 			}
 			e = t.Execute(file, map[string]interface{}{
 				"baseDir":      baseDir,
-				"funcName":     group + strcase.ToCamel(getHandlerBaseName(handler)),
+				"funcName":     getHandlerBaseName(handler),
 				"requestType":  route.RequestType.Name,
 				"apiFuncName":  strcase.ToCamel(util.RouteToFuncName(route.Method, route.Path)),
 				"responseType": route.ResponseType.Name,
@@ -105,7 +105,7 @@ func genTest(dir string, api *spec.ApiSpec) error {
 
 		// test file
 		testFiles[group] = append(testFiles[group], map[string]interface{}{
-			"funcName": group + strcase.ToCamel(getHandlerBaseName(handler)),
+			"funcName": getHandlerBaseName(handler),
 		})
 	}
 
