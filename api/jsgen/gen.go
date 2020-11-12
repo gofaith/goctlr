@@ -46,8 +46,11 @@ export function apiRequest(method,uri,body,onOk,onFail,eventually){
         if (typeof body == 'string'){
 			xhr.setRequestHeader('Content-Type','application/json')
 			xhr.send(body)
-		}else if (body instanceof File || body instanceof Blob){
+		}else if(body instanceof File||body instanceof Blob){
 			xhr.setRequestHeader('Content-Type',body.type)
+			xhr.send(body)
+		}else if(body instanceof FormData){
+			xhr.setRequestHeader('Content-Type','multipart/form-data')
 			xhr.send(body)
         }else{
 			xhr.setRequestHeader('Content-Type','application/json')
