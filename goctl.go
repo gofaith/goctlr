@@ -91,6 +91,10 @@ var (
 							Name:  "api",
 							Usage: "the api file",
 						},
+						cli.BoolFlag{
+							Name:  "nocli",
+							Usage: "donnot generate client folder and test folder",
+						},
 					},
 					Action: gogen.GoCommand,
 				},

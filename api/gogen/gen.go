@@ -54,8 +54,10 @@ func GoCommand(c *cli.Context) error {
 	logx.Must(genHandlers(dir, api))
 	logx.Must(genRoutes(dir, api))
 	logx.Must(genLogic(dir, api))
-	logx.Must(genClient(dir, api))
-	logx.Must(genTest(dir, api))
+	if !c.Bool("nocli") {
+		logx.Must(genClient(dir, api))
+		logx.Must(genTest(dir, api))
+	}
 	// it does not work
 	format(dir)
 	createGoModFileIfNeed(dir)
