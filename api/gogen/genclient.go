@@ -21,6 +21,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gofaith/go-zero/core/logx"
@@ -105,6 +106,7 @@ import (
 	"github.com/gofaith/go-zero/core/logx"
 )
 {{with .Service}}{{range .Routes}}
+// {{camelCase (routeToFuncName .Method .Path)}} {{.Summary}}
 func (c *Client) {{camelCase (routeToFuncName .Method .Path)}}({{with .RequestType}}{{if ne .Name ""}}request types.{{.Name}}{{end}}{{end}}) {{with .ResponseType}}{{if ne .Name ""}}(*types.{{.Name}}, error){{else}}error{{end}}{{end}} {
 	{{with .ResponseType}}{{if ne .Name ""}}res{{else}}_{{end}}{{end}}, e := c.Request("{{upperCase .Method}}", "{{.Path}}", {{with .RequestType}}{{if ne .Name ""}}request{{else}}nil{{end}}{{end}})
 	if e != nil {

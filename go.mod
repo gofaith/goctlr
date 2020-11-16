@@ -9,7 +9,6 @@ require (
 	github.com/go-xorm/builder v0.3.4
 	github.com/gofaith/go-zero v1.0.0
 	github.com/iancoleman/strcase v0.1.2
-	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/stretchr/testify v1.6.1
 	github.com/urfave/cli v1.22.4
