@@ -16,12 +16,15 @@ var FuncsMap = template.FuncMap{
 	"routeToFuncName": RouteToFuncName,
 	"toKtType":        toKtType,
 	"toJavaType":      toJavaType,
+	"toJavaGetFunc":   toJavaGetTypeFunc,
 	"toDartType":      toDartType,
 	"add":             add,
 	"upperCase":       upperCase,
 	"isDirectType":    isDirectType,
 	"isClassListType": isClassListType,
 	"getCoreType":     getCoreType,
+	"isAtomicType":    isAtomicType,
+	"isListType":      isListType,
 }
 
 func isDirectType(s string) bool {
@@ -155,15 +158,33 @@ func toJavaType(t string) string {
 	switch t {
 	case "string":
 		return "String"
-	case "int", "int32", "int64":
+	case "int", "int32":
 		return "Integer"
+	case "int64":
+		return "Long"
 	case "float", "float32", "float64":
-		return "Float"
+		return "Double"
 	case "bool":
 		return "Boolean"
 	default:
 		return t
 	}
+}
+
+func toJavaGetTypeFunc(t string) string {
+	switch toJavaType(t) {
+	case "String":
+		return "getString"
+	case "Integer":
+		return "getInt"
+	case "Boolean":
+		return "getBoolean"
+	case "Double":
+		return "getDouble"
+	case "Long":
+		return "getLong"
+	}
+	return "..invalid.." + t
 }
 
 func add(a, i int) int {

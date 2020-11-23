@@ -56,21 +56,55 @@ public class Base {
 }`
 	apiTemplate=`package {{with .Info}}{{.Desc}}{{end}};
 
-import com.google.gson.Gson;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class {{with .Info}}{{.Title}}{{end}} {
 	{{range .Types}}
-	public static class {{.Name}} { {{range .Members}}
+	public static class {{.Name}} extends JSONObject{ {{range .Members}}
 		public {{toJavaType .Type}} {{lowCamelCase .Name}};{{end}}
+		@Override
+		public String toString(){
+			try { {{range .Members}}
+				{{if isAtomicType .Type}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{else if isListType .Type}}if (this.{{lowCamelCase .Name}} == null) {
+					put("{{tagGet .Tag "json"}}",null);
+				}else{
+					JSONArray {{lowCamelCase .Name}}JsonArray = new JSONArray();
+					for (int i = 0; i < this.{{lowCamelCase .Name}}.size(); i++) {
+						{{lowCamelCase .Name}}JsonArray.put(this.{{lowCamelCase .Name}}.get(i));
+					}
+					put("{{tagGet .Tag "json"}}", {{lowCamelCase .Name}}JsonArray);
+				}{{else}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{end}}{{end}}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return super.toString();
+		}
+		public static {{.Name}} fromJson(JSONObject object) {
+			{{.Name}} v = new {{.Name}}();
+			try { {{range .Members}}
+				{{if isAtomicType .Type}}v.{{lowCamelCase .Name}} = object.{{toJavaGetFunc .Type}}("{{tagGet .Tag "json"}}");{{else if isListType .Type}}if (object.has("{{tagGet .Tag "json"}}")) {
+					v.{{lowCamelCase .Name}} = new ArrayList<>();
+					JSONArray {{lowCamelCase .Name}}JsonArray = object.getJSONArray("{{tagGet .Tag "json"}}");
+					for (int i = 0; i < {{lowCamelCase .Name}}JsonArray.length(); i++) {
+						v.{{lowCamelCase .Name}}.add({{if isClassListType .Type}}{{getCoreType .Type}}.fromJson({{lowCamelCase .Name}}JsonArray.getJSONObject(i)){{else}}{{lowCamelCase .Name}}JsonArray.{{toJavaGetFunc (getCoreType .Type)}}(i){{end}});
+					}
+				}{{else}}v.{{lowCamelCase .Name}} = {{.Type}}.fromJson(object.getJSONObject("{{tagGet .Tag "json"}}"));{{end}}{{end}}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return v;
+		}
 	}{{end}}
 	{{with .Service}}{{range .Routes}}
 	public static {{with .ResponseType}}{{if eq .Name ""}}void{{else}}{{.Name}}{{end}}{{end}} {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}{{.Name}} request{{else}}{{end}}{{end}}) throws Exception {
-		String res = Base.request("{{upperCase .Method}}", "{{.Path}}", {{with .RequestType}}{{if ne .Name ""}}new Gson().toJson(request){{else}}null{{end}}{{end}});
-		{{with .ResponseType}}{{if ne .Name ""}}return new Gson().fromJson(res, {{.Name}}.class);{{end}}{{end}}
+		{{with .ResponseType}}{{if ne .Name ""}}String res = {{end}}{{end}}Base.request("{{upperCase .Method}}", "{{.Path}}", {{with .RequestType}}{{if ne .Name ""}}request.toString(){{else}}null{{end}}{{end}});{{with .ResponseType}}{{if ne .Name ""}}
+		return {{.Name}}.fromJson((JSONObject) new JSONTokener(res).nextValue());{{end}}{{end}}
 	} {{end}}{{end}}
 }
 `
