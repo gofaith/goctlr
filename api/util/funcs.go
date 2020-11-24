@@ -10,21 +10,23 @@ import (
 )
 
 var FuncsMap = template.FuncMap{
-	"tagGet":          tagGet,
-	"lowCamelCase":    strcase.ToLowerCamel,
-	"camelCase":       strcase.ToCamel,
-	"routeToFuncName": RouteToFuncName,
-	"toKtType":        toKtType,
-	"toJavaType":      toJavaType,
-	"toJavaGetFunc":   toJavaGetTypeFunc,
-	"toDartType":      toDartType,
-	"add":             add,
-	"upperCase":       upperCase,
-	"isDirectType":    isDirectType,
-	"isClassListType": isClassListType,
-	"getCoreType":     getCoreType,
-	"isAtomicType":    isAtomicType,
-	"isListType":      isListType,
+	"tagGet":              tagGet,
+	"lowCamelCase":        strcase.ToLowerCamel,
+	"camelCase":           strcase.ToCamel,
+	"routeToFuncName":     RouteToFuncName,
+	"toKtType":            toKtType,
+	"toJavaType":          toJavaType,
+	"toJavaPrimitiveType": toJavaPrimitiveType,
+	"isJavaTypeNullable":  isJavaTypeNullable,
+	"toJavaGetFunc":       toJavaGetTypeFunc,
+	"toDartType":          toDartType,
+	"add":                 add,
+	"upperCase":           upperCase,
+	"isDirectType":        isDirectType,
+	"isClassListType":     isClassListType,
+	"getCoreType":         getCoreType,
+	"isAtomicType":        isAtomicType,
+	"isListType":          isListType,
 }
 
 func isDirectType(s string) bool {
@@ -75,7 +77,14 @@ func RouteToFuncName(method, path string) string {
 
 	return strings.ToLower(method) + strcase.ToCamel(path)
 }
-
+func isJavaTypeNullable(t string) bool {
+	switch toJavaPrimitiveType(t) {
+	case "int", "boolean", "double", "float","long":
+		return false
+	default:
+		return true
+	}
+}
 func toDartType(t string) string {
 	t = strings.Replace(t, "*", "", -1)
 	if strings.HasPrefix(t, "[]") {
@@ -133,6 +142,39 @@ func toKtType(t string) string {
 		return "Double"
 	case "bool":
 		return "Boolean"
+	default:
+		return t
+	}
+}
+
+func toJavaPrimitiveType(t string) string {
+	t = strings.Replace(t, "*", "", -1)
+	if strings.HasPrefix(t, "[]") {
+		return "List<" + toJavaType(t[2:]) + ">"
+	}
+
+	if strings.HasPrefix(t, "map") {
+		tys, e := DecomposeType(t)
+		if e != nil {
+			log.Fatal(e)
+		}
+		if len(tys) != 2 {
+			log.Fatal("Map type number !=2")
+		}
+		return "Map<String," + toJavaType(tys[1]) + ">"
+	}
+
+	switch t {
+	case "string":
+		return "String"
+	case "int", "int32":
+		return "int"
+	case "int64":
+		return "long"
+	case "float", "float32", "float64":
+		return "double"
+	case "bool":
+		return "boolean"
 	default:
 		return t
 	}

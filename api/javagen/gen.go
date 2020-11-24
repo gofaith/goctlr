@@ -67,19 +67,19 @@ import java.util.Map;
 public class {{with .Info}}{{.Title}}{{end}} {
 	{{range .Types}}
 	public static class {{.Name}} extends JSONObject{ {{range .Members}}
-		public {{toJavaType .Type}} {{lowCamelCase .Name}};{{end}}
+		public {{toJavaPrimitiveType .Type}} {{lowCamelCase .Name}};{{end}}
 		@Override
 		public String toString(){
 			try { {{range .Members}}
-				if (this.{{lowCamelCase .Name}} == null) {
-					put("{{tagGet .Tag "json"}}", JSONObject.NULL);
+				{{if isJavaTypeNullable .Type}}if (this.{{lowCamelCase .Name}} == null) {
+					put("{{tagGet .Tag "json"}}", {{if eq .Type "string"}}""{{else}}JSONObject.NULL{{end}});
 				}else{
-					{{if isAtomicType .Type}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{else if isListType .Type}}JSONArray {{lowCamelCase .Name}}JsonArray = new JSONArray();
+					{{end}}{{if isAtomicType .Type}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{else if isListType .Type}}JSONArray {{lowCamelCase .Name}}JsonArray = new JSONArray();
 					for (int i = 0; i < this.{{lowCamelCase .Name}}.size(); i++) {
 						{{lowCamelCase .Name}}JsonArray.put(this.{{lowCamelCase .Name}}.get(i));
 					}
 					put("{{tagGet .Tag "json"}}", {{lowCamelCase .Name}}JsonArray);{{else}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{end}}
-				}{{end}}
+				{{if isJavaTypeNullable .Type}}}{{end}}{{end}}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -88,7 +88,7 @@ public class {{with .Info}}{{.Title}}{{end}} {
 		public static {{.Name}} fromJson(JSONObject object) {
 			{{.Name}} v = new {{.Name}}();
 			try { {{range .Members}}
-				{{if isAtomicType .Type}}v.{{lowCamelCase .Name}} = object.{{toJavaGetFunc .Type}}("{{tagGet .Tag "json"}}");{{else if isListType .Type}}if (object.has("{{tagGet .Tag "json"}}")) {
+				{{if isAtomicType .Type}}v.{{lowCamelCase .Name}} = object.{{toJavaGetFunc .Type}}("{{tagGet .Tag "json"}}");{{else if isListType .Type}}if (object.has("{{tagGet .Tag "json"}}")&&!object.isNull("{{tagGet .Tag "json"}}")) {
 					v.{{lowCamelCase .Name}} = new ArrayList<>();
 					JSONArray {{lowCamelCase .Name}}JsonArray = object.getJSONArray("{{tagGet .Tag "json"}}");
 					for (int i = 0; i < {{lowCamelCase .Name}}JsonArray.length(); i++) {
