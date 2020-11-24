@@ -71,15 +71,15 @@ public class {{with .Info}}{{.Title}}{{end}} {
 		@Override
 		public String toString(){
 			try { {{range .Members}}
-				{{if isAtomicType .Type}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{else if isListType .Type}}if (this.{{lowCamelCase .Name}} == null) {
-					put("{{tagGet .Tag "json"}}",null);
+				if (this.{{lowCamelCase .Name}} == null) {
+					put("{{tagGet .Tag "json"}}", JSONObject.NULL);
 				}else{
-					JSONArray {{lowCamelCase .Name}}JsonArray = new JSONArray();
+					{{if isAtomicType .Type}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{else if isListType .Type}}JSONArray {{lowCamelCase .Name}}JsonArray = new JSONArray();
 					for (int i = 0; i < this.{{lowCamelCase .Name}}.size(); i++) {
 						{{lowCamelCase .Name}}JsonArray.put(this.{{lowCamelCase .Name}}.get(i));
 					}
-					put("{{tagGet .Tag "json"}}", {{lowCamelCase .Name}}JsonArray);
-				}{{else}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{end}}{{end}}
+					put("{{tagGet .Tag "json"}}", {{lowCamelCase .Name}}JsonArray);{{else}}put("{{tagGet .Tag "json"}}",this.{{lowCamelCase .Name}});{{end}}
+				}{{end}}
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
