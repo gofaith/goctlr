@@ -1,4 +1,4 @@
-package jsgen
+package nodejsgen
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func JsCommand(c *cli.Context) error {
+func NodeJsCommand(c *cli.Context) error {
 	apiFile := c.String("api")
 	if apiFile == "" {
 		return errors.New("missing -api")

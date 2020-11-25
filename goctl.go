@@ -13,6 +13,7 @@ import (
 	"github.com/gofaith/goctl/api/jsgen"
 	"github.com/gofaith/goctl/api/ktgen"
 	"github.com/gofaith/goctl/api/mdgen"
+	"github.com/gofaith/goctl/api/nodejsgen"
 	"github.com/gofaith/goctl/api/tsgen"
 	"github.com/gofaith/goctl/api/validate"
 	"github.com/gofaith/goctl/configgen"
@@ -182,8 +183,23 @@ var (
 					Action: ktgen.KtCommand,
 				},
 				{
+					Name:  "nodejs",
+					Usage: "generate nodejs-style javascript code for provided api file",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "dir",
+							Usage: "the target directory",
+						},
+						cli.StringFlag{
+							Name:  "api",
+							Usage: "the api file",
+						},
+					},
+					Action: nodejsgen.NodeJsCommand,
+				},
+				{
 					Name:  "js",
-					Usage: "generate javascript code for provided api file",
+					Usage: "generate nodejs-style javascript code for provided api file",
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "dir",

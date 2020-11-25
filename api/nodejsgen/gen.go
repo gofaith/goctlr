@@ -1,4 +1,4 @@
-package jsgen
+package nodejsgen
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ import (
 const (
 	baseTemplate = `
 var server='http://localhost:8888'
-function apiRequest(method,uri,body,onOk,onFail,eventually){
+export function apiRequest(method,uri,body,onOk,onFail,eventually){
     var xhr=new XMLHttpRequest();
     xhr.onreadystatechange=function(e){
         if(xhr.readyState==4){
@@ -60,9 +60,10 @@ function apiRequest(method,uri,body,onOk,onFail,eventually){
         xhr.send()
     }
 }`
-	apiTemplate = `{{with .Service}}{{range .Routes}}
+	apiTemplate = `import {apiRequest} from './base'
+{{with .Service}}{{range .Routes}}
 //{{.Summary}}
-function {{routeToFuncName .Method .Path}}(req,onOk,onFail,eventually){
+export function {{routeToFuncName .Method .Path}}(req,onOk,onFail,eventually){
     apiRequest('{{upperCase .Method}}','{{.Path}}',req,onOk,onFail,eventually)
 }{{end}}{{end}}`
 )
