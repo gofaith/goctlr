@@ -14,7 +14,7 @@ import (
 const (
 	baseTemplate = `
 var server='http://localhost:8888'
-function apiRequest(method,uri,body,onOk,onFail,eventually){
+function apiRequest(method,uri,body,onOk,onFail,eventually,headers){
     var xhr=new XMLHttpRequest();
     xhr.onreadystatechange=function(e){
         if(xhr.readyState==4){
@@ -41,7 +41,12 @@ function apiRequest(method,uri,body,onOk,onFail,eventually){
         }
     }
     xhr.open(method,server+uri,true)
-    xhr.setRequestHeader('Cookies',document.cookie)
+	xhr.setRequestHeader('Cookies',document.cookie)
+	if(headers){
+		for(key in headers){
+			xhr.setRequestHeader(key,headers[key]);
+		}
+	}
     if(body){
         if (typeof body == 'string'){
 			xhr.setRequestHeader('Content-Type','application/json')
@@ -62,8 +67,8 @@ function apiRequest(method,uri,body,onOk,onFail,eventually){
 }`
 	apiTemplate = `{{with .Service}}{{range .Routes}}
 //{{.Summary}}
-function {{routeToFuncName .Method .Path}}(req,onOk,onFail,eventually){
-    apiRequest('{{upperCase .Method}}','{{.Path}}',req,onOk,onFail,eventually)
+function {{routeToFuncName .Method .Path}}(req,onOk,onFail,eventually,headers){
+    apiRequest('{{upperCase .Method}}','{{.Path}}',req,onOk,onFail,eventually,headers)
 }{{end}}{{end}}`
 )
 
