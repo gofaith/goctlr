@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofaith/goctl/api/spec"
 	"github.com/gofaith/goctl/api/util"
+	apiutil "github.com/gofaith/goctl/api/util"
 	ctlutil "github.com/gofaith/goctl/util"
 	"github.com/gofaith/goctl/vars"
 )
@@ -57,6 +58,7 @@ func genLogicByRoute(dir string, group spec.Group, route spec.Route) error {
 	if !ok {
 		return fmt.Errorf("missing handler annotation for %q", route.Path)
 	}
+	typ, _ := apiutil.GetAnnotationValue(route.Annotations, "server", "type")
 
 	handler = strings.TrimSuffix(handler, "handler")
 	handler = strings.TrimSuffix(handler, "Handler")
@@ -77,20 +79,33 @@ func genLogicByRoute(dir string, group spec.Group, route spec.Route) error {
 		return err
 	}
 
-	imports := genLogicImports(route, parentPkg)
+	imports := genLogicImports(route, parentPkg, typ)
 	var responseString string
 	var returnString string
 	var requestString string
-	if len(route.ResponseType.Name) > 0 {
-		resp := strings.Title(route.ResponseType.Name)
-		responseString = "(*types." + resp + ", error)"
-		returnString = fmt.Sprintf("return &types.%s{}, nil", resp)
-	} else {
+	switch typ {
+	case SERVER_TYPE_HTML:
+		if len(route.RequestType.Name) > 0 {
+			requestString = "w http.ResponseWriter, r *http.Request, req " + "types." + strings.Title(route.RequestType.Name)
+		} else {
+			requestString = "w http.ResponseWriter, r *http.Request"
+		}
+
 		responseString = "error"
 		returnString = "return nil"
-	}
-	if len(route.RequestType.Name) > 0 {
-		requestString = "req " + "types." + strings.Title(route.RequestType.Name)
+	default:
+		if len(route.RequestType.Name) > 0 {
+			requestString = "req " + "types." + strings.Title(route.RequestType.Name)
+		}
+
+		if len(route.ResponseType.Name) > 0 {
+			resp := strings.Title(route.ResponseType.Name)
+			responseString = "(*types." + resp + ", error)"
+			returnString = fmt.Sprintf("return &types.%s{}, nil", resp)
+		} else {
+			responseString = "error"
+			returnString = "return nil"
+		}
 	}
 
 	t := template.Must(template.New("logicTemplate").Parse(logicTemplate))
@@ -125,13 +140,22 @@ func getLogicFolderPath(group spec.Group, route spec.Route) string {
 	return path.Join(logicDir, folder)
 }
 
-func genLogicImports(route spec.Route, parentPkg string) string {
+func genLogicImports(route spec.Route, parentPkg, typ string) string {
 	var imports []string
-	imports = append(imports, `"context"`+"\n")
-	imports = append(imports, fmt.Sprintf("\"%s\"", ctlutil.JoinPackages(parentPkg, contextDir)))
-	if len(route.ResponseType.Name) > 0 || len(route.RequestType.Name) > 0 {
-		imports = append(imports, fmt.Sprintf("\"%s\"\n", ctlutil.JoinPackages(parentPkg, typesDir)))
+	imports = append(imports, `"context"`)
+	switch typ {
+	case SERVER_TYPE_HTML:
+		imports = append(imports, `"net/http"`)
+		if len(route.RequestType.Name) > 0 {
+			imports = append(imports, fmt.Sprintf("\"%s\"", ctlutil.JoinPackages(parentPkg, typesDir)))
+		}
+	default:
+		if len(route.ResponseType.Name) > 0 || len(route.RequestType.Name) > 0 {
+			imports = append(imports, fmt.Sprintf("\"%s\"", ctlutil.JoinPackages(parentPkg, typesDir)))
+		}
 	}
+	imports = append(imports, fmt.Sprintf("\"%s\"", ctlutil.JoinPackages(parentPkg, contextDir)))
+
 	imports = append(imports, fmt.Sprintf("\"%s/go-zero/core/logx\"", vars.ProjectOpenSourceUrl))
 	return strings.Join(imports, "\n\t")
 }

@@ -46,6 +46,13 @@ func {{.handlerName}}(ctx *svc.ServiceContext) http.HandlerFunc {
 			{{.respWriter}}
 		}
 	`
+	hasRespTemplate_HtmlMode = `
+		l := logic.{{.logic}}(r.Context(), ctx)
+		err := l.{{.callee}}({{.req}})
+		if err != nil {
+			httpx.Error(w, err)
+		}
+	`
 )
 
 func genHandler(dir string, group spec.Group, route spec.Route) error {
@@ -53,6 +60,8 @@ func genHandler(dir string, group spec.Group, route spec.Route) error {
 	if !ok {
 		return fmt.Errorf("missing handler annotation for %q", route.Path)
 	}
+	typ, _ := apiutil.GetAnnotationValue(route.Annotations, "server", "type")
+
 	handler = getHandlerName(handler)
 	var reqBody string
 	if len(route.RequestType.Name) > 0 {
@@ -66,9 +75,20 @@ func genHandler(dir string, group spec.Group, route spec.Route) error {
 		reqBody = bodyBuilder.String()
 	}
 
-	var req = "req"
-	if len(route.RequestType.Name) == 0 {
-		req = ""
+	var req string
+	switch typ {
+	case SERVER_TYPE_HTML:
+		if route.RequestType.Name == "" {
+			req = "w,r"
+		} else {
+			req = "w,r,req"
+		}
+	default:
+		if route.RequestType.Name == "" {
+			req = ""
+		} else {
+			req = "req"
+		}
 	}
 	var logicResponse string
 	var writeResponse string
@@ -82,16 +102,31 @@ func genHandler(dir string, group spec.Group, route spec.Route) error {
 		respWriter = `httpx.Ok(w)`
 	}
 	var logicBodyBuilder strings.Builder
-	t := template.Must(template.New("hasRespTemplate").Parse(hasRespTemplate))
-	if err := t.Execute(&logicBodyBuilder, map[string]string{
-		"logic":         "New" + strings.TrimSuffix(strings.Title(handler), "Handler") + "Logic",
-		"callee":        strings.Title(strings.TrimSuffix(handler, "Handler")),
-		"req":           req,
-		"logicResponse": logicResponse,
-		"writeResponse": writeResponse,
-		"respWriter":    respWriter,
-	}); err != nil {
-		return err
+	switch typ {
+	case SERVER_TYPE_HTML:
+		t := template.Must(template.New("hasRespTemplate").Parse(hasRespTemplate_HtmlMode))
+		if err := t.Execute(&logicBodyBuilder, map[string]string{
+			"logic":         "New" + strings.TrimSuffix(strings.Title(handler), "Handler") + "Logic",
+			"callee":        strings.Title(strings.TrimSuffix(handler, "Handler")),
+			"req":           req,
+			"logicResponse": logicResponse,
+			"writeResponse": writeResponse,
+			"respWriter":    respWriter,
+		}); err != nil {
+			return err
+		}
+	default:
+		t := template.Must(template.New("hasRespTemplate").Parse(hasRespTemplate))
+		if err := t.Execute(&logicBodyBuilder, map[string]string{
+			"logic":         "New" + strings.TrimSuffix(strings.Title(handler), "Handler") + "Logic",
+			"callee":        strings.Title(strings.TrimSuffix(handler, "Handler")),
+			"req":           req,
+			"logicResponse": logicResponse,
+			"writeResponse": writeResponse,
+			"respWriter":    respWriter,
+		}); err != nil {
+			return err
+		}
 	}
 	respBody := logicBodyBuilder.String()
 
