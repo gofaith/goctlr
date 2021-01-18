@@ -73,5 +73,21 @@ func (p *Parser) Parse() (*spec.ApiSpec, error) {
 		}
 	}
 
+	for i, g := range api.Service.Groups {
+		for _, a := range g.Annotations {
+			if a.Name == "server" {
+				api.Service.Groups[i].Desc = a.Properties["desc"]
+				_, api.Service.Groups[i].Jwt = a.Properties["jwt"]
+				break
+			}
+		}
+		for j, r := range g.Routes {
+			for _, a := range r.Annotations {
+				if a.Name == "doc" {
+					api.Service.Groups[i].Routes[j].Summary = a.Properties["summary"]
+				}
+			}
+		}
+	}
 	return api, nil
 }

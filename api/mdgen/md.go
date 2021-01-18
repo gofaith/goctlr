@@ -3,10 +3,10 @@ package mdgen
 import (
 	"bytes"
 	"fmt"
-	"html/template"
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"github.com/gofaith/go-zero/core/stringx"
 	"github.com/gofaith/goctlr/api/gogen"
@@ -15,8 +15,20 @@ import (
 )
 
 const (
+	markdownTemplateHead = `{{with .Info}}# {{.Desc}}
+
+编辑者：{{.Author}}
+
+联系邮箱：{{.Email}}
+{{end}}
+
+{{with .Service}}{{range .Groups}}
+- {{if .Jwt}}👥{{end}}{{.Desc}}{{range .Routes}}
+	- [{{.Summary}}](#{{.Summary}}){{end}}
+{{end}}
+{{end}}	`
 	markdownTemplate = `
-### {{.index}}. {{.routeComment}}
+### {{.routeComment}}
 
 
 {{.routeDesc}}
@@ -42,8 +54,12 @@ func genMd(api *spec.ApiSpec, path string) error {
 	}
 	defer f.Close()
 
-	var builder strings.Builder
-	builder.WriteString("# " + api.Info.Desc)
+	var builder = new(strings.Builder)
+	e = template.Must(template.New("markdownTemplateHead").Parse(markdownTemplateHead)).Execute(builder, api)
+	if e != nil {
+		return e
+	}
+
 	for index, route := range api.Service.Routes {
 		routeComment, _ := util.GetAnnotationValue(route.Annotations, "doc", "summary")
 		if len(routeComment) == 0 {

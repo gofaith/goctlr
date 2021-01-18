@@ -13,6 +13,8 @@ type (
 	}
 
 	Group struct {
+		Desc        string
+		Jwt         bool
 		Annotations []Annotation
 		Routes      []Route
 	}
