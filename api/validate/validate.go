@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/gofaith/goctlr/api/parser"
 	"github.com/logrusorgru/aurora"
-	"github.com/gofaith/goctl/api/parser"
 	"github.com/urfave/cli"
 )
 

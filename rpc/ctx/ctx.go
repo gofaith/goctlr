@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/gofaith/go-zero/core/logx"
-	"github.com/gofaith/goctl/util"
-	"github.com/gofaith/goctl/util/console"
-	"github.com/gofaith/goctl/util/stringx"
+	"github.com/gofaith/goctlr/util"
+	"github.com/gofaith/goctlr/util/console"
+	"github.com/gofaith/goctlr/util/stringx"
 	"github.com/urfave/cli"
 )
 

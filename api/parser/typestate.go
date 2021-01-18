@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/util"
 )
 
 type typeState struct {

@@ -10,8 +10,6 @@ github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible/go
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
 github.com/StackExchange/wmi v0.0.0-20170410192909-ea383cf3ba6e/go.mod h1:3eOhrUMpNV+6aFIbp5/iudMxNCF27Vw2OZgy4xEx0Fg=
-github.com/StevenZack/tools v1.9.17 h1:qyO1InIJgD0LVIFEpojwrsYSV4KcioCKSUCcLQbFEzg=
-github.com/StevenZack/tools v1.9.17/go.mod h1:LlyXuTr/PvhiYiVL865mFkNzqSQ5jOlIc/gqtWAveqk=
 github.com/StevenZack/tools v1.10.3 h1:fPcSxyQ2hRK219l8GUb+wfLpoNsaRx3gL/wkf2Meb8c=
 github.com/StevenZack/tools v1.10.3/go.mod h1:LlyXuTr/PvhiYiVL865mFkNzqSQ5jOlIc/gqtWAveqk=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
@@ -135,8 +133,6 @@ github.com/gofaith/go-zero v1.0.0 h1:gUk2X6jHKjNPzmIvoPiTMrREBdpyXQ/nEFUrL9k6Bl0
 github.com/gofaith/go-zero v1.0.0/go.mod h1:aCT+k/NZYwXpokFfhUCMgI3hhXCdeiojQbZdv9kOhr0=
 github.com/gofaith/go-zero v1.1.0 h1:dtmvsDsHMR7jOqW3DUU9QG033W4W/srrrwBOCOuGhaY=
 github.com/gofaith/go-zero v1.1.0/go.mod h1:CVpQrSuFCKu6Y7sCnffBvog7a6YEhDFuhowD64tDk+Q=
-github.com/gofaith/goctl v1.0.15 h1:HP5dtLG9qf5bj3uyLNGUYzf3l7izXg04cKxFKVYvDwM=
-github.com/gofaith/goctl v1.0.15/go.mod h1:OeFPdwhWNORub8JYdyAXwxepKOaf1R24MLVujdhN9Do=
 github.com/gogo/googleapis v1.1.0/go.mod h1:gf4bu3Q80BeJ6H1S1vYPm8/ELATdvryBaNFGgqEef3s=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=

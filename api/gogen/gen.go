@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/gofaith/go-zero/core/logx"
-	apiformat "github.com/gofaith/goctl/api/format"
-	"github.com/gofaith/goctl/api/parser"
-	apiutil "github.com/gofaith/goctl/api/util"
-	"github.com/gofaith/goctl/util"
+	apiformat "github.com/gofaith/goctlr/api/format"
+	"github.com/gofaith/goctlr/api/parser"
+	apiutil "github.com/gofaith/goctlr/api/util"
+	"github.com/gofaith/goctlr/util"
 	"github.com/logrusorgru/aurora"
 	"github.com/urfave/cli"
 )

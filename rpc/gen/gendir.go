@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/util"
 )
 
 //  target

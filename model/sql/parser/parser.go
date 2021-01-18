@@ -3,8 +3,8 @@ package parser
 import (
 	"fmt"
 
-	"github.com/gofaith/goctl/model/sql/converter"
-	"github.com/gofaith/goctl/util/stringx"
+	"github.com/gofaith/goctlr/model/sql/converter"
+	"github.com/gofaith/goctlr/util/stringx"
 	"github.com/xwb1989/sqlparser"
 )
 

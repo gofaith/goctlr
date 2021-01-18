@@ -9,10 +9,10 @@ import (
 	"text/template"
 
 	"github.com/gofaith/go-zero/core/collection"
-	"github.com/gofaith/goctl/api/spec"
-	apiutil "github.com/gofaith/goctl/api/util"
-	"github.com/gofaith/goctl/util"
-	"github.com/gofaith/goctl/vars"
+	"github.com/gofaith/goctlr/api/spec"
+	apiutil "github.com/gofaith/goctlr/api/util"
+	"github.com/gofaith/goctlr/util"
+	"github.com/gofaith/goctlr/vars"
 )
 
 const (

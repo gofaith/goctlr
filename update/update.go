@@ -9,8 +9,8 @@ import (
 	"github.com/gofaith/go-zero/core/conf"
 	"github.com/gofaith/go-zero/core/hash"
 	"github.com/gofaith/go-zero/core/logx"
-	"github.com/gofaith/goctl/update/config"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/update/config"
+	"github.com/gofaith/goctlr/util"
 )
 
 const (

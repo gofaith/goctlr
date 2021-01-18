@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/util"
 )
 
 const configTemplate = `package config

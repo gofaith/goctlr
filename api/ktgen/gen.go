@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/api/util"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/api/util"
 	"github.com/iancoleman/strcase"
 )
 

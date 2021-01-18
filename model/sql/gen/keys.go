@@ -3,8 +3,8 @@ package gen
 import (
 	"fmt"
 
-	"github.com/gofaith/goctl/model/sql/parser"
-	"github.com/gofaith/goctl/util/stringx"
+	"github.com/gofaith/goctlr/model/sql/parser"
+	"github.com/gofaith/goctlr/util/stringx"
 )
 
 type (

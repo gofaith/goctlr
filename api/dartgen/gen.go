@@ -8,9 +8,9 @@ import (
 	"text/template"
 
 	"github.com/gofaith/go-zero/core/logx"
-	"github.com/gofaith/goctl/api/parser"
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/api/util"
+	"github.com/gofaith/goctlr/api/parser"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/api/util"
 	"github.com/iancoleman/strcase"
 	"github.com/urfave/cli"
 )

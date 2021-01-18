@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/util"
 )
 
 const etcTemplate = `Name: {{.serviceName}}.rpc

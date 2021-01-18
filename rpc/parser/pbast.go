@@ -11,9 +11,9 @@ import (
 
 	"github.com/gofaith/go-zero/core/lang"
 	sx "github.com/gofaith/go-zero/core/stringx"
-	"github.com/gofaith/goctl/util"
-	"github.com/gofaith/goctl/util/console"
-	"github.com/gofaith/goctl/util/stringx"
+	"github.com/gofaith/goctlr/util"
+	"github.com/gofaith/goctlr/util/console"
+	"github.com/gofaith/goctlr/util/stringx"
 )
 
 const (

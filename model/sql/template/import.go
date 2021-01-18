@@ -11,7 +11,7 @@ var (
 	"github.com/gofaith/go-zero/core/stores/sqlc"
 	"github.com/gofaith/go-zero/core/stores/sqlx"
 	"github.com/gofaith/go-zero/core/stringx"
-	"github.com/gofaith/goctl/model/sql/builderx"
+	"github.com/gofaith/goctlr/model/sql/builderx"
 )
 `
 	ImportsNoCache = `import (
@@ -22,7 +22,7 @@ var (
 	"github.com/gofaith/go-zero/core/stores/sqlc"
 	"github.com/gofaith/go-zero/core/stores/sqlx"
 	"github.com/gofaith/go-zero/core/stringx"
-	"github.com/gofaith/goctl/model/sql/builderx"
+	"github.com/gofaith/goctlr/model/sql/builderx"
 )
 `
 )

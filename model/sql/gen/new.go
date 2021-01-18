@@ -1,8 +1,8 @@
 package gen
 
 import (
-	"github.com/gofaith/goctl/model/sql/template"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/model/sql/template"
+	"github.com/gofaith/goctlr/util"
 )
 
 func genNew(table Table, withCache bool) (string, error) {

@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/logrusorgru/aurora"
 	"github.com/gofaith/go-zero/core/logx"
-	"github.com/gofaith/goctl/api/parser"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/api/parser"
+	"github.com/gofaith/goctlr/util"
+	"github.com/logrusorgru/aurora"
 	"github.com/urfave/cli"
 )
 

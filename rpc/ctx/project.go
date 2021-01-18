@@ -9,8 +9,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/gofaith/goctl/rpc/execx"
-	"github.com/gofaith/goctl/util/console"
+	"github.com/gofaith/goctlr/rpc/execx"
+	"github.com/gofaith/goctlr/util/console"
 )
 
 const (

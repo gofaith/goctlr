@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"text/template"
 
-	"github.com/gofaith/goctl/api/util"
-	"github.com/gofaith/goctl/vars"
+	"github.com/gofaith/goctlr/api/util"
+	"github.com/gofaith/goctlr/vars"
 )
 
 const (

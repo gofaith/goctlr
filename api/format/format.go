@@ -12,8 +12,8 @@ import (
 	"strings"
 
 	"github.com/gofaith/go-zero/core/errorx"
-	"github.com/gofaith/goctl/api/parser"
-	"github.com/gofaith/goctl/api/util"
+	"github.com/gofaith/goctlr/api/parser"
+	"github.com/gofaith/goctlr/api/util"
 	"github.com/urfave/cli"
 )
 

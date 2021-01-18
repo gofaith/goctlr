@@ -7,8 +7,8 @@ import (
 	"text/template"
 
 	"github.com/StevenZack/tools/strToolkit"
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/api/util"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/api/util"
 )
 
 const (

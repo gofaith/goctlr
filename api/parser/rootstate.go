@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gofaith/goctl/api/spec"
+	"github.com/gofaith/goctlr/api/spec"
 )
 
 type rootState struct {

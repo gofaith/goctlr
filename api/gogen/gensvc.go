@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"text/template"
 
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/api/util"
-	ctlutil "github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/api/util"
+	ctlutil "github.com/gofaith/goctlr/util"
 )
 
 const (

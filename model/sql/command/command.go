@@ -8,9 +8,9 @@ import (
 	"github.com/gofaith/go-zero/core/collection"
 	"github.com/gofaith/go-zero/core/logx"
 	"github.com/gofaith/go-zero/core/stores/sqlx"
-	"github.com/gofaith/goctl/model/sql/gen"
-	"github.com/gofaith/goctl/model/sql/model"
-	"github.com/gofaith/goctl/util/console"
+	"github.com/gofaith/goctlr/model/sql/gen"
+	"github.com/gofaith/goctlr/model/sql/model"
+	"github.com/gofaith/goctlr/util/console"
 	"github.com/urfave/cli"
 )
 

@@ -1,8 +1,8 @@
 package gen
 
 import (
-	"github.com/gofaith/goctl/rpc/ctx"
-	"github.com/gofaith/goctl/rpc/parser"
+	"github.com/gofaith/goctlr/rpc/ctx"
+	"github.com/gofaith/goctlr/rpc/parser"
 )
 
 const (

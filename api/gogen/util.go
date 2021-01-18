@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/gofaith/go-zero/core/collection"
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/api/util"
-	goctlutil "github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/api/util"
+	goctlutil "github.com/gofaith/goctlr/util"
 )
 
 func getParentPackage(dir string) (string, error) {

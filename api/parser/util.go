@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/gofaith/goctl/api/spec"
+	"github.com/gofaith/goctlr/api/spec"
 )
 
 // struct match

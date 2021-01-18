@@ -9,8 +9,8 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/gofaith/goctlr/util"
 	"github.com/logrusorgru/aurora"
-	"github.com/gofaith/goctl/util"
 	"github.com/urfave/cli"
 )
 

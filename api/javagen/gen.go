@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/api/util"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/api/util"
 	"github.com/iancoleman/strcase"
 )
 
@@ -54,7 +54,7 @@ public class Base {
 		return buffer.toString();
 	}
 }`
-	apiTemplate=`package {{with .Info}}{{.Desc}}{{end}};
+	apiTemplate = `package {{with .Info}}{{.Desc}}{{end}};
 
 import org.json.JSONArray;
 import org.json.JSONException;

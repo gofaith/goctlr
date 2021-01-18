@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gofaith/goctl/api/spec"
+	"github.com/gofaith/goctlr/api/spec"
 )
 
 func DecomposeType(t string) (result []string, err error) {

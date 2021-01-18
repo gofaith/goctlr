@@ -1,8 +1,8 @@
 package command
 
 import (
-	"github.com/gofaith/goctl/rpc/ctx"
-	"github.com/gofaith/goctl/rpc/gen"
+	"github.com/gofaith/goctlr/rpc/ctx"
+	"github.com/gofaith/goctlr/rpc/gen"
 	"github.com/urfave/cli"
 )
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gofaith/go-zero/core/stringx"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/util"
 )
 
 const (

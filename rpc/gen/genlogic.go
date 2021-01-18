@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gofaith/go-zero/core/collection"
-	"github.com/gofaith/goctl/rpc/parser"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/rpc/parser"
+	"github.com/gofaith/goctlr/util"
 )
 
 const (

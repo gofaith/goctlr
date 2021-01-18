@@ -1,8 +1,8 @@
 package gen
 
 import (
-	"github.com/gofaith/goctl/util"
-	"github.com/gofaith/goctl/util/console"
+	"github.com/gofaith/goctlr/util"
+	"github.com/gofaith/goctlr/util/console"
 )
 
 const rpcTemplateText = `syntax = "proto3";

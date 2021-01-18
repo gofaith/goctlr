@@ -3,9 +3,9 @@ package gen
 import (
 	"strings"
 
-	"github.com/gofaith/goctl/model/sql/template"
-	"github.com/gofaith/goctl/util"
-	"github.com/gofaith/goctl/util/stringx"
+	"github.com/gofaith/goctlr/model/sql/template"
+	"github.com/gofaith/goctlr/util"
+	"github.com/gofaith/goctlr/util/stringx"
 )
 
 func genVars(table Table, withCache bool) (string, error) {

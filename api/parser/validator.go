@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gofaith/go-zero/core/stringx"
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/api/util"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/api/util"
 )
 
 func (p *Parser) validate(api *spec.ApiSpec) (err error) {

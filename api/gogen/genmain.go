@@ -6,10 +6,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/gofaith/goctl/api/spec"
-	"github.com/gofaith/goctl/api/util"
-	ctlutil "github.com/gofaith/goctl/util"
-	"github.com/gofaith/goctl/vars"
+	"github.com/gofaith/goctlr/api/spec"
+	"github.com/gofaith/goctlr/api/util"
+	ctlutil "github.com/gofaith/goctlr/util"
+	"github.com/gofaith/goctlr/vars"
 )
 
 const mainTemplate = `package main

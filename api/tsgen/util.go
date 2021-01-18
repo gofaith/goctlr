@@ -5,9 +5,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/gofaith/goctl/api/spec"
-	apiutil "github.com/gofaith/goctl/api/util"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/api/spec"
+	apiutil "github.com/gofaith/goctlr/api/util"
+	"github.com/gofaith/goctlr/util"
 )
 
 func writeProperty(writer io.Writer, member spec.Member, indent int, prefixForType func(string) string) error {

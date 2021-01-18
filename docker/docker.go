@@ -3,7 +3,7 @@ package docker
 import (
 	"errors"
 
-	"github.com/gofaith/goctl/gen"
+	"github.com/gofaith/goctlr/gen"
 	"github.com/urfave/cli"
 )
 

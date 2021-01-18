@@ -4,10 +4,10 @@ go 1.15
 
 require (
 	github.com/StevenZack/tools v1.10.3
+	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/dsymonds/gotoc v0.0.0-20160928043926-5aebcfc91819
 	github.com/go-xorm/builder v0.3.4
 	github.com/gofaith/go-zero v1.1.0
-	github.com/gofaith/goctl v1.0.15
 	github.com/iancoleman/strcase v0.1.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect

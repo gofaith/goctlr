@@ -6,9 +6,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/gofaith/goctl/api/spec"
-	apiutil "github.com/gofaith/goctl/api/util"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/api/spec"
+	apiutil "github.com/gofaith/goctlr/api/util"
+	"github.com/gofaith/goctlr/util"
 )
 
 const (

@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gofaith/goctl/model/sql/parser"
-	"github.com/gofaith/goctl/model/sql/template"
-	"github.com/gofaith/goctl/util"
-	"github.com/gofaith/goctl/util/console"
-	"github.com/gofaith/goctl/util/stringx"
+	"github.com/gofaith/goctlr/model/sql/parser"
+	"github.com/gofaith/goctlr/model/sql/template"
+	"github.com/gofaith/goctlr/util"
+	"github.com/gofaith/goctlr/util/console"
+	"github.com/gofaith/goctlr/util/stringx"
 )
 
 const (

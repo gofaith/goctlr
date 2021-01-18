@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gofaith/goctl/rpc/execx"
-	"github.com/gofaith/goctl/rpc/parser"
-	"github.com/gofaith/goctl/util"
+	"github.com/gofaith/goctlr/rpc/execx"
+	"github.com/gofaith/goctlr/rpc/parser"
+	"github.com/gofaith/goctlr/util"
 )
 
 const (
