@@ -3,10 +3,13 @@ package gogen
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"path"
+	"path/filepath"
 	"strings"
 	"text/template"
 
+	"github.com/StevenZack/tools/strToolkit"
 	"github.com/gofaith/goctlr/api/spec"
 	"github.com/gofaith/goctlr/api/util"
 	apiutil "github.com/gofaith/goctlr/api/util"
@@ -14,7 +17,8 @@ import (
 	"github.com/gofaith/goctlr/vars"
 )
 
-const logicTemplate = `package logic
+const (
+	logicTemplate = `package logic
 
 import (
 	{{.imports}}
@@ -30,16 +34,26 @@ func New{{.logic}}(ctx context.Context, svcCtx *svc.ServiceContext) {{.logic}} {
 	return {{.logic}}{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
-		s: svcCtx,
+		s:      svcCtx,
 	}
 }
 
+// {{.summary}} {{if ne .desc ""}}
+// {{.desc}}{{end}}
 func (l *{{.logic}}) {{.function}}({{.request}}) {{.responseType}} {
 	// TODO: add your logic here and delete this line
 
 	{{.returnString}}
 }
 `
+	delimiter1 = `
+		s:      svcCtx,
+	}
+}
+`
+	delimiter2 = `
+func (l *`
+)
 
 func genLogic(dir string, api *spec.ApiSpec) error {
 	for _, g := range api.Service.Groups {
@@ -59,17 +73,54 @@ func genLogicByRoute(dir string, group spec.Group, route spec.Route) error {
 		return fmt.Errorf("missing handler annotation for %q", route.Path)
 	}
 	typ, _ := apiutil.GetAnnotationValue(route.Annotations, "server", "type")
-
+	summary, _ := apiutil.GetAnnotationValue(route.Annotations, "doc", "summary")
+	desc, _ := apiutil.GetAnnotationValue(route.Annotations, "doc", "desc")
 	handler = strings.TrimSuffix(handler, "handler")
 	handler = strings.TrimSuffix(handler, "Handler")
 	filename := strings.ToLower(handler)
 	goFile := filename + "logic.go"
+	logic := strings.Title(handler) + "Logic"
 	fp, created, err := util.MaybeCreateFile(dir, getLogicFolderPath(group, route), goFile)
 	if err != nil {
 		return err
 	}
 
 	if !created {
+		//update doc
+		path := filepath.Join(dir, getLogicFolderPath(group, route), goFile)
+		b, e := ioutil.ReadFile(path)
+		if e != nil {
+			return e
+		}
+		content := string(b)
+		buf := new(bytes.Buffer)
+		buf.WriteString(strToolkit.SubBefore(content, delimiter1, content))
+		buf.WriteString(delimiter1)
+
+		//code
+		rcontent := strToolkit.SubAfter(content, delimiter1, content)
+		e = strToolkit.RangeLines(strToolkit.SubBefore(rcontent, delimiter2, rcontent), func(line string) bool {
+			if strings.HasPrefix(line, "//") {
+				return false
+			}
+			buf.WriteString("\n" + line)
+			return false
+		})
+		if e != nil {
+			return e
+		}
+
+		buf.WriteString("\n// " + summary)
+		if desc != "" {
+			buf.WriteString("\n// " + desc)
+		}
+		buf.WriteString(delimiter2)
+		buf.WriteString(strToolkit.SubAfter(content, delimiter2, content))
+
+		e = ioutil.WriteFile(path, buf.Bytes(), 0644)
+		if e != nil {
+			return e
+		}
 		return nil
 	}
 	defer fp.Close()
@@ -112,7 +163,9 @@ func genLogicByRoute(dir string, group spec.Group, route spec.Route) error {
 	buffer := new(bytes.Buffer)
 	err = t.Execute(fp, map[string]string{
 		"imports":      imports,
-		"logic":        strings.Title(handler) + "Logic",
+		"logic":        logic,
+		"summary":      summary,
+		"desc":         desc,
 		"function":     strings.Title(strings.TrimSuffix(handler, "Handler")),
 		"responseType": responseString,
 		"returnString": returnString,
