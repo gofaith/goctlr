@@ -100,7 +100,7 @@ func genLogicByRoute(dir string, group spec.Group, route spec.Route) error {
 		//code
 		rcontent := strToolkit.SubAfter(content, delimiter1, content)
 		e = strToolkit.RangeLines(strToolkit.SubBefore(rcontent, delimiter2, rcontent), func(line string) bool {
-			if strings.HasPrefix(line, "//") {
+			if line == "" || strings.HasPrefix(line, "//") {
 				return false
 			}
 			buf.WriteString("\n" + line)
