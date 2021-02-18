@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/gofaith/go-zero/core/logx"
@@ -91,6 +92,10 @@ var (
 						cli.StringFlag{
 							Name:  "api",
 							Usage: "the api file",
+						},
+						cli.StringFlag{
+							Name:  "proto",
+							Usage: ".proto file",
 						},
 						cli.BoolFlag{
 							Name:  "clitest",
@@ -378,6 +383,10 @@ var (
 		},
 	}
 )
+
+func init() {
+	log.SetFlags(log.Lshortfile)
+}
 
 func main() {
 	logx.Disable()

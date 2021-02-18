@@ -55,7 +55,7 @@ func (l *{{.logic}}) {{.function}}({{.request}}) {{.responseType}} {
 func (l *`
 )
 
-func genLogic(dir string, api *spec.ApiSpec) error {
+func genLogic(dir, proto string, api *spec.ApiSpec) error {
 	for _, g := range api.Service.Groups {
 		for _, r := range g.Routes {
 			err := genLogicByRoute(dir, g, r)

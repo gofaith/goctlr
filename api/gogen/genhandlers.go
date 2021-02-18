@@ -3,7 +3,10 @@ package gogen
 import (
 	"bytes"
 	"fmt"
+	"log"
+	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -53,7 +56,108 @@ func {{.handlerName}}(ctx *svc.ServiceContext) http.HandlerFunc {
 			httpx.Error(w, err)
 		}
 	`
+	protoTemplate = `package handler
+
+import (
+	"io"
+	"net/http"
+
+	"github.com/gofaith/rest/httpx"
+	logic "{{.pkg}}/internal/logic/user"
+	"{{.pkg}}/internal/pb"
+	"{{.pkg}}/internal/svc"{{if and (ne .route.RequestType.Name "") (ne .route.ResponseType.Name "")}}
+	"google.golang.org/protobuf/proto"{{end}}
 )
+
+func {{.name}}Handler(ctx *svc.ServiceContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		l := logic.New{{.name}}Logic(r.Context(), ctx){{if ne .route.RequestType.Name ""}}
+		b, e := io.ReadAll(r.Body)
+		if e != nil {
+			httpx.Error(w, e)
+			return
+		}
+		req := pb.User{{.name}}Request{}
+		e = proto.Unmarshal(b, &req)
+		if e != nil {
+			httpx.Error(w, e)
+			return
+		}{{if ne .route.ResponseType.Name ""}}
+		res, e := l.{{.name}}(&req)
+		if e != nil {
+			httpx.Error(w, e)
+			return
+		}
+		b2, e := proto.Marshal(res)
+		if e != nil {
+			httpx.Error(w, e)
+			return
+		}
+		w.Write(b){{else}}
+		e := l.{{.name}}(&req)
+		if e != nil {
+			httpx.Error(w, e)
+			return
+		}
+		httpx.Ok(w){{end}}{{else}}{{if ne .route.ResponseType.Name ""}}
+		res, e := l.{{.name}}()
+		if e != nil {
+			httpx.Error(w, e)
+			return
+		}
+		b2, e := proto.Marshal(res)
+		if e != nil {
+			httpx.Error(w, e)
+			return
+		}
+		w.Write(b){{else}}
+		e := l.{{.name}}()
+		if e != nil {
+			httpx.Error(w, e)
+			return
+		}
+		httpx.Ok(w){{end}}{{end}}
+	}
+}
+`
+)
+
+func genHandlerProto(dir string, group spec.Group, route spec.Route) error {
+	handler, ok := apiutil.GetAnnotationValue(route.Annotations, "server", "handler")
+	if !ok {
+		return fmt.Errorf("missing handler annotation for %q", route.Path)
+	}
+	handler = getHandlerName(handler)
+	pkg, e := getParentPackage(dir)
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+
+	t, e := template.New("protoTemplate").Parse(protoTemplate)
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+
+	fo, e := os.OpenFile(filepath.Join(dir, getHandlerFolderPath(group, route), strings.ToLower(handler)+".go"), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+	defer fo.Close()
+
+	e = t.Execute(fo, map[string]interface{}{
+		"pkg":   pkg,
+		"route": route,
+		"name":  strings.TrimSuffix(handler, "Handler"),
+	})
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+	return nil
+}
 
 func genHandler(dir string, group spec.Group, route spec.Route) error {
 	handler, ok := apiutil.GetAnnotationValue(route.Annotations, "server", "handler")
@@ -182,9 +286,17 @@ func doGenToFile(dir, handler string, group spec.Group, route spec.Route, bodyBu
 	return err
 }
 
-func genHandlers(dir string, api *spec.ApiSpec) error {
+func genHandlers(dir, proto string, api *spec.ApiSpec) error {
 	for _, group := range api.Service.Groups {
 		for _, route := range group.Routes {
+			if proto != "" {
+				e := genHandlerProto(dir, group, route)
+				if e != nil {
+					log.Println(e)
+					return e
+				}
+				continue
+			}
 			if err := genHandler(dir, group, route); err != nil {
 				return err
 			}
