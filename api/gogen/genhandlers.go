@@ -14,6 +14,7 @@ import (
 	apiutil "github.com/gofaith/goctlr/api/util"
 	"github.com/gofaith/goctlr/util"
 	"github.com/gofaith/goctlr/vars"
+	"github.com/iancoleman/strcase"
 )
 
 const (
@@ -140,7 +141,10 @@ func genHandlerProto(dir string, group spec.Group, route spec.Route) error {
 		return e
 	}
 
-	fo, e := os.OpenFile(filepath.Join(dir, getHandlerFolderPath(group, route), strings.ToLower(handler)+".go"), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	base := filepath.Join(dir, getHandlerFolderPath(group, route))
+	os.MkdirAll(base, 0755)
+	path := filepath.Join(base, strings.ToLower(handler)+".go")
+	fo, e := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if e != nil {
 		log.Println(e)
 		return e
@@ -150,7 +154,7 @@ func genHandlerProto(dir string, group spec.Group, route spec.Route) error {
 	e = t.Execute(fo, map[string]interface{}{
 		"pkg":   pkg,
 		"route": route,
-		"name":  strings.TrimSuffix(handler, "Handler"),
+		"name":  strcase.ToCamel(strings.TrimSuffix(handler, "Handler")),
 	})
 	if e != nil {
 		log.Println(e)
