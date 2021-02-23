@@ -70,7 +70,7 @@ export class {{.Name}} {
 	}
 }{{end}}
 
-export class {{with .Info}}{{.Title}}{{end}} {{{range .Routes}}
+export class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
 	static {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}
 		req:{{.Name}},{{end}}{{end}}
 		onOk: ({{with .ResponseType}}{{if ne .Name ""}}res: {{.Name}}{{end}}{{end}}) => void, 
@@ -81,7 +81,7 @@ export class {{with .Info}}{{.Title}}{{end}} {{{range .Routes}}
         apiRequest('{{upperCase .Method}}', '{{.Path}}', {{with .RequestType}}{{if ne .Name ""}}req{{else}}null{{end}}{{end}}, res=>{
             onOk({{with .ResponseType}}{{if ne .Name ""}}{{.Name}}.fromJson(JSON.parse(res)){{end}}{{end}})
         }, onFail, eventually, headers);
-	}{{end}}
+	}{{end}}{{end}}
 }`
 )
 
