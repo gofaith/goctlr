@@ -30,7 +30,7 @@ function apiRequest(method: string, uri: string, body: any, onOk: (res: string) 
 			eventually();
 		}
 	}
-	xhr.open(method, HttpConfig.getServerApi() + uri, true);
+	xhr.open(method, 'http://localhost:8080' + uri, true);
 	if (headers) {
 		for (let key in headers) {
 			xhr.setRequestHeader(key, headers[key]);
