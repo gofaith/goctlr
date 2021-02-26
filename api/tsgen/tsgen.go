@@ -59,14 +59,12 @@ export default apiRequest;`
 
 	apiTemplate = `import apiRequest from "./apiRequest"
 {{range .Types}}
-export class {{.Name}} {
-	constructor({{range .Members}}
-		public {{lowCamelCase .Name}}: {{toTsType .Type}},{{end}}
-	) { }
+export class {{.Name}} { {{range .Members}}
+	public {{tagGet .Tag "json"}}?: {{toTsType .Type}};{{end}}
 	static fromJson(json: any): {{.Name}} {
-		return new {{.Name}}({{range .Members}}
-			json['{{tagGet .Tag "json"}}'],{{end}}
-		)
+		const v = new {{.Name}}();{{range .Members}}
+		v.{{tagGet .Tag "json"}} = json['{{tagGet .Tag "json"}}'];{{end}}
+		return v;
 	}
 }{{end}}
 
