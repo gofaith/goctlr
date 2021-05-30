@@ -53,7 +53,7 @@ func genTypes(dir string, api *spec.ApiSpec) error {
 		return err
 	}
 
-	fp, created, err := apiutil.MaybeCreateFile(dir, typesDir, typesFile)
+	fp, created, err := apiutil.MaybeCreateFile(dir, typesDir, strings.ToLower(strings.TrimSuffix(api.Service.Name, "-api"))+typesFile)
 	if err != nil {
 		return err
 	}
