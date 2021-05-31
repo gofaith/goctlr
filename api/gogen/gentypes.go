@@ -48,7 +48,7 @@ func genTypes(dir string, api *spec.ApiSpec) error {
 		return err
 	}
 
-	filename := path.Join(dir, typesDir, typesFile)
+	filename := path.Join(dir, typesDir, strings.ToLower(strings.TrimSuffix(api.Service.Name, "-api"))+typesFile)
 	if err := util.RemoveOrQuit(filename); err != nil {
 		return err
 	}
