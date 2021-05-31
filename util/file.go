@@ -1,13 +1,10 @@
 package util
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/logrusorgru/aurora"
 )
 
 func CreateIfNotExist(file string) (*os.File, error) {
@@ -32,9 +29,9 @@ func RemoveOrQuit(filename string) error {
 		return nil
 	}
 
-	fmt.Printf("%s exists, overwrite it?\nEnter to overwrite or Ctrl-C to cancel...",
-		aurora.BgRed(aurora.Bold(filename)))
-	bufio.NewReader(os.Stdin).ReadBytes('\n')
+	// fmt.Printf("%s exists, overwrite it?\nEnter to overwrite or Ctrl-C to cancel...",
+	// 	aurora.BgRed(aurora.Bold(filename)))
+	// bufio.NewReader(os.Stdin).ReadBytes('\n')
 
 	return os.Remove(filename)
 }
