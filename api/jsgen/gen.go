@@ -1,7 +1,7 @@
 package jsgen
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -79,7 +79,7 @@ func genBase(dir string, api *spec.ApiSpec) error {
 	}
 	path := filepath.Join(dir, "base.js")
 	if _, e := os.Stat(path); e == nil {
-		fmt.Println("base.js already exists , skipped it.")
+		log.Println("base.js already exists , skipped it.")
 		return nil
 	}
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -397,6 +396,6 @@ func main() {
 	app.Commands = commands
 	// cli already print error messages
 	if err := app.Run(os.Args); err != nil {
-		fmt.Println("error:", err)
+		log.Println("error:", err)
 	}
 }

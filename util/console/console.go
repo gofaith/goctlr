@@ -2,6 +2,7 @@ package console
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/logrusorgru/aurora"
@@ -36,22 +37,22 @@ func NewColorConsole() *colorConsole {
 
 func (c *colorConsole) Info(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Println(msg)
+	log.Println(msg)
 }
 
 func (c *colorConsole) Success(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Println(aurora.Green(msg))
+	log.Println(aurora.Green(msg))
 }
 
 func (c *colorConsole) Warning(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Println(aurora.Yellow(msg))
+	log.Println(aurora.Yellow(msg))
 }
 
 func (c *colorConsole) Error(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Println(aurora.Red(msg))
+	log.Println(aurora.Red(msg))
 }
 
 func (c *colorConsole) Fatalln(format string, a ...interface{}) {
@@ -71,22 +72,22 @@ func NewIdeaConsole() *ideaConsole {
 
 func (i *ideaConsole) Info(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Println(msg)
+	log.Println(msg)
 }
 
 func (i *ideaConsole) Success(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Println("[SUCCESS]: ", msg)
+	log.Println("[SUCCESS]: ", msg)
 }
 
 func (i *ideaConsole) Warning(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Println("[WARNING]: ", msg)
+	log.Println("[WARNING]: ", msg)
 }
 
 func (i *ideaConsole) Error(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
-	fmt.Println("[ERROR]: ", msg)
+	log.Println("[ERROR]: ", msg)
 }
 
 func (i *ideaConsole) Fatalln(format string, a ...interface{}) {

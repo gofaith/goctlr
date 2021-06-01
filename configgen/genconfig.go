@@ -2,7 +2,7 @@ package configgen
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -85,6 +85,6 @@ func GenConfigCommand(c *cli.Context) error {
 		panic(err)
 	}
 
-	fmt.Println(aurora.Green("Done."))
+	log.Println(aurora.Green("Done."))
 	return nil
 }

@@ -2,7 +2,7 @@ package apigen
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -67,6 +67,6 @@ func ApiCommand(c *cli.Context) error {
 		return err
 	}
 
-	fmt.Println(aurora.Green("Done."))
+	log.Println(aurora.Green("Done."))
 	return nil
 }

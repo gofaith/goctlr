@@ -1,7 +1,6 @@
 package tsgen
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -92,7 +91,7 @@ func genBase(dir string, api *spec.ApiSpec) error {
 
 	path := filepath.Join(dir, "apiRequest.ts")
 	if _, e := os.Stat(path); e == nil {
-		fmt.Println("apiRequest.ts already exists, skipped it.")
+		log.Println("apiRequest.ts already exists, skipped it.")
 		return nil
 	}
 

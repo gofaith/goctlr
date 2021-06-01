@@ -1,7 +1,7 @@
 package javagen
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -117,7 +117,7 @@ func genBase(dir, pkg string, api *spec.ApiSpec) error {
 	}
 	path := filepath.Join(dir, "Base.java")
 	if _, e := os.Stat(path); e == nil {
-		fmt.Println("Base.java already exists. Skipped it.")
+		log.Println("Base.java already exists. Skipped it.")
 		return nil
 	}
 

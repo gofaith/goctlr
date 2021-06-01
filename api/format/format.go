@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go/format"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -42,7 +43,7 @@ func GoFormatApi(c *cli.Context) error {
 	be.Add(err)
 	if be.NotNil() {
 		errs := be.Err().Error()
-		fmt.Println(errs)
+		log.Println(errs)
 		os.Exit(1)
 	}
 	return be.Err()

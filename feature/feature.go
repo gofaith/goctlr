@@ -1,7 +1,7 @@
 package feature
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/logrusorgru/aurora"
 	"github.com/urfave/cli"
@@ -12,7 +12,7 @@ var feature = `
 `
 
 func Feature(_ *cli.Context) error {
-	fmt.Println(aurora.Blue("\nFEATURE:"))
-	fmt.Println(aurora.Blue(feature))
+	log.Println(aurora.Blue("\nFEATURE:"))
+	log.Println(aurora.Blue(feature))
 	return nil
 }

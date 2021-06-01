@@ -2,7 +2,7 @@ package validate
 
 import (
 	"errors"
-	"fmt"
+	"log"
 
 	"github.com/gofaith/goctlr/api/parser"
 	"github.com/logrusorgru/aurora"
@@ -22,7 +22,7 @@ func GoValidateApi(c *cli.Context) error {
 	}
 	_, err = p.Parse()
 	if err == nil {
-		fmt.Println(aurora.Green("api format ok"))
+		log.Println(aurora.Green("api format ok"))
 	}
 	return err
 }

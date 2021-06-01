@@ -2,7 +2,7 @@ package dartgen
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -125,7 +125,7 @@ func genBase(dir string, api *spec.ApiSpec) error {
 	}
 	path := filepath.Join(dir, "base.dart")
 	if _, e := os.Stat(path); e == nil {
-		fmt.Println("base.dart already exists, skipped it.")
+		log.Println("base.dart already exists, skipped it.")
 		return nil
 	}
 

@@ -1,7 +1,7 @@
 package gogen
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -151,7 +151,7 @@ func genClient(dir string, api *spec.ApiSpec) error {
 			return e
 		}
 	} else if e == nil {
-		fmt.Println("client.go exists. skipped it.")
+		log.Println("client.go exists. skipped it.")
 	}
 
 	// gen api.go
