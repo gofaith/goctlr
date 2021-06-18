@@ -59,7 +59,7 @@ export default apiRequest;`
 	apiTemplate = `import apiRequest from "./apiRequest"
 {{range .Types}}
 export class {{.Name}} { {{range .Members}}
-	public {{tagGet .Tag "json"}}?: {{toTsType .Type}};{{end}}
+	public {{tagGet .Tag "json"}}?: {{toTsType .Type}};	//{{tagTail .Tag "json"}}，{{.Comment}} {{end}}
 	static fromJson(json: any): {{.Name}} {
 		const v = new {{.Name}}();{{range .Members}}
 		v.{{tagGet .Tag "json"}} = json['{{tagGet .Tag "json"}}'];{{end}}

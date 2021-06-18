@@ -125,7 +125,7 @@ func parseFields(fields []*ast.Field) ([]spec.Member, error) {
 			Type:     stringExpr,
 			Expr:     tp,
 			Tag:      tag,
-			Comments: comments,
+			Comment:  strings.Join(comments, "; "),
 			Docs:     docs,
 			IsInline: isInline,
 		})

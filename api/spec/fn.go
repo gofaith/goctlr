@@ -105,10 +105,6 @@ func (m Member) GetPropertyName() (string, error) {
 	return "", errors.New("json property name not exist, member: " + m.Name)
 }
 
-func (m Member) GetComment() string {
-	return strings.TrimSpace(strings.Join(m.Comments, "; "))
-}
-
 func (m Member) IsBodyMember() bool {
 	if m.IsInline {
 		return true

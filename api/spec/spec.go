@@ -38,12 +38,9 @@ type (
 		// ArrayType:[]int、[]User、[]*User
 		// InterfaceType: interface{}
 		// Type
-		Expr interface{}
-		Tag  string
-		// Deprecated
-		Comment string // 换成标准struct中将废弃
-		// 成员尾部注释说明
-		Comments []string
+		Expr    interface{}
+		Tag     string
+		Comment string // 注释
 		// 成员头顶注释说明
 		Docs     []string
 		IsInline bool

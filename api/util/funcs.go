@@ -11,6 +11,7 @@ import (
 
 var FuncsMap = template.FuncMap{
 	"tagGet":              tagGet,
+	"tagTail":             tagTail,
 	"lowCamelCase":        strcase.ToLowerCamel,
 	"camelCase":           strcase.ToCamel,
 	"routeToFuncName":     RouteToFuncName,
@@ -65,6 +66,18 @@ func tagGet(tag, k string) (reflect.Value, error) {
 	v, _ := TagLookup(tag, k)
 	out := strings.Split(v, ",")[0]
 	return reflect.ValueOf(out), nil
+}
+
+func tagTail(tag, k string) string {
+	v, _ := TagLookup(tag, k)
+	out := strings.Split(v, ",")
+	if len(out) <= 1 {
+		return "必传"
+	}
+	if strings.HasPrefix(out[1], "optional") {
+		return "可选"
+	}
+	return out[1]
 }
 
 func RouteToFuncName(method, path string) string {

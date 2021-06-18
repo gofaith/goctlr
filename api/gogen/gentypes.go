@@ -137,7 +137,7 @@ func writeType(writer io.Writer, tp spec.Type, types []spec.Type) error {
 		// 			"should set json tag as `json:\"%s\"` \n", tp.Name, member.Name, util.Untitle(member.Name))
 		// 	}
 		// }
-		if err := writeProperty(writer, member.Name, tpString, member.Tag, member.GetComment(), 1); err != nil {
+		if err := writeProperty(writer, member.Name, tpString, member.Tag, member.Comment, 1); err != nil {
 			return err
 		}
 	}
