@@ -14,7 +14,16 @@ import (
 const (
 	apiBaseTemplate = `import pako from 'pako';
 
-function apiRequest(method: string, uri: string, body: any, onOk: (res: string) => void, onFail: (e: string) => void, eventually?: () => void, headers?: Record<string, string>) {
+export class ErrorCode{
+	public code:number;
+	public desc:string;
+	constructor(code:number,desc:string){
+		this.code=code;
+		this.desc=desc;
+	}
+}
+
+export function apiRequest(method: string, uri: string, body: any, onOk: (res: string) => void, onFail: (e: ErrorCode) => void, eventually?: () => void, headers?: Record<string, string>) {
 	const xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function (ev: Event) {
 		if (xhr.readyState != 4) {
@@ -22,8 +31,19 @@ function apiRequest(method: string, uri: string, body: any, onOk: (res: string) 
 		}
 		if (xhr.status == 200) {
 			onOk(xhr.responseText);
+		}else if(xhr.status==401){
+			doLogout();
 		} else {
-			onFail(xhr.responseText);
+			try{
+				let err:ErrorCode=JSON.parse(xhr.responseText)
+				if (err.code==4){
+					doLogout();
+				}else{
+					onFail(err)
+				}
+			}catch(e){
+				onFail(new ErrorCode(1,e))
+			}
 		}
 		if (eventually) {
 			eventually();
@@ -51,12 +71,9 @@ function apiRequest(method: string, uri: string, body: any, onOk: (res: string) 
 	} else {
 		xhr.send()
 	}
+}`
 
-}
-
-export default apiRequest;`
-
-	apiTemplate = `import apiRequest from "./apiRequest"
+	apiTemplate = `import {apiRequest, ErrorCode} from "./apiRequest"
 {{range .Types}}
 export class {{.Name}} { {{range .Members}}
 	public {{tagGet .Tag "json"}}?: {{toTsType .Type}};	//{{tagTail .Tag "json"}}，{{.Comment}} {{end}}
@@ -71,7 +88,7 @@ export class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}
 	static {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}
 		req:{{.Name}},{{end}}{{end}}
 		onOk: ({{with .ResponseType}}{{if ne .Name ""}}res: {{.Name}}{{end}}{{end}}) => void, 
-		onFail: (e: string) => void, 
+		onFail: (e: ErrorCode) => void, 
 		eventually?: () => void, 
 		headers?: Record<string, string>
 	) {
