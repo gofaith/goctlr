@@ -85,6 +85,8 @@ export class {{.Name}} { {{range .Members}}
 }{{end}}
 
 export class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
+	/** {{.Summary}}{{if ne .Desc ""}}
+	{{.Desc}}{{end}}*/
 	static {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}
 		req:{{.Name}},{{end}}{{end}}
 		onOk: ({{with .ResponseType}}{{if ne .Name ""}}res: {{.Name}}{{end}}{{end}}) => void, 

@@ -68,6 +68,7 @@ func (p *Parser) Parse() (*spec.ApiSpec, error) {
 		for _, a := range r.Annotations {
 			if a.Name == "doc" {
 				api.Service.Routes[i].Summary = a.Properties["summary"]
+				api.Service.Routes[i].Desc = a.Properties["desc"]
 				break
 			}
 		}
