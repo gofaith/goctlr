@@ -74,15 +74,6 @@ export function apiRequest(method: string, uri: string, body: any, onOk: (res: s
 }`
 
 	apiTemplate = `import {apiRequest, ErrorCode} from "./apiRequest"
-{{range .Types}}
-export class {{.Name}} { {{range .Members}}
-	public {{tagGet .Tag "json"}}?: {{toTsType .Type}};	//{{tagTail .Tag "json"}}，{{.Comment}} {{end}}
-	static fromJson(json: any): {{.Name}} {
-		const v = new {{.Name}}();{{range .Members}}
-		v.{{tagGet .Tag "json"}} = json['{{tagGet .Tag "json"}}'];{{end}}
-		return v;
-	}
-}{{end}}
 
 export class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
 	/** {{.Summary}}{{if ne .Desc ""}}
@@ -98,7 +89,17 @@ export class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}
             onOk({{with .ResponseType}}{{if ne .Name ""}}{{.Name}}.fromJson(JSON.parse(res)){{end}}{{end}})
         }, onFail, eventually, headers);
 	}{{end}}{{end}}
-}`
+}
+{{range .Types}}
+export class {{.Name}} { {{range .Members}}
+	public {{tagGet .Tag "json"}}?: {{toTsType .Type}};	//{{tagTail .Tag "json"}}，{{.Comment}} {{end}}
+	static fromJson(json: any): {{.Name}} {
+		const v = new {{.Name}}();{{range .Members}}
+		v.{{tagGet .Tag "json"}} = json['{{tagGet .Tag "json"}}'];{{end}}
+		return v;
+	}
+}{{end}}
+`
 )
 
 func genBase(dir string, api *spec.ApiSpec) error {
