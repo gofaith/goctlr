@@ -92,11 +92,16 @@ export class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}
 }
 {{range .Types}}
 export class {{.Name}} { {{range .Members}}
-	public {{tagGet .Tag "json"}}?: {{toTsType .Type}};	//{{tagTail .Tag "json"}}，{{.Comment}} {{end}}
+	public {{tagGet .Tag "json"}}: {{toTsType .Type}};	//{{tagTail .Tag "json"}}，{{.Comment}} {{end}}
+	constructor({{range .Members}}
+		{{tagGet .Tag "json"}}_: {{toTsType .Type}},{{end}}
+	){ {{range .Members}}
+		this.{{tagGet .Tag "json"}} = {{tagGet .Tag "json"}}_;{{end}}
+	}
 	static fromJson(json: any): {{.Name}} {
-		const v = new {{.Name}}();{{range .Members}}
-		v.{{tagGet .Tag "json"}} = json['{{tagGet .Tag "json"}}'];{{end}}
-		return v;
+		return new {{.Name}}({{range .Members}}
+			json['{{tagGet .Tag "json"}}'],{{end}}
+		);
 	}
 }{{end}}
 `
