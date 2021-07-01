@@ -17,6 +17,7 @@ var FuncsMap = template.FuncMap{
 	"routeToFuncName":     RouteToFuncName,
 	"toKtType":            toKtType,
 	"toTsType":            toTsType,
+	"tsDefaultValue":      tsDefaultValue,
 	"toJavaType":          toJavaType,
 	"toJavaPrimitiveType": toJavaPrimitiveType,
 	"isJavaTypeNullable":  isJavaTypeNullable,
@@ -181,14 +182,32 @@ func toTsType(t string) string {
 	switch t {
 	case "string":
 		return "string"
-	case "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
-		return "number"
-	case "float", "float32", "float64":
+	case "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "float", "float32", "float64":
 		return "number"
 	case "bool":
 		return "boolean"
 	default:
 		return t
+	}
+}
+
+func tsDefaultValue(typ string) string {
+	typ = toTsType(typ)
+	if strings.HasPrefix(typ, "Array<") {
+		return `[]`
+	}
+	if strings.HasPrefix(typ, "Record<") {
+		return `{}`
+	}
+	switch typ {
+	case "string":
+		return `''`
+	case "number":
+		return "0"
+	case "boolean":
+		return `false`
+	default:
+		return `new ` + typ + `()`
 	}
 }
 

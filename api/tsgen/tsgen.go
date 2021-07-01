@@ -92,8 +92,10 @@ export class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}
 }
 {{range .Types}}
 export class {{.Name}} { {{range .Members}}
-	public {{tagGet .Tag "json"}}!: {{toTsType .Type}};	//{{tagTail .Tag "json"}}，{{.Comment}} {{end}}
-	
+	public {{tagGet .Tag "json"}}: {{toTsType .Type}};	//{{tagTail .Tag "json"}}，{{.Comment}} {{end}}
+	constructor() { {{range .Members}}
+		this.{{tagGet .Tag "json"}} = {{tsDefaultValue .Type}};{{end}}
+	}
 	static fromJson(json: any): {{.Name}} {
 		const obj = new {{.Name}}();
 		{{range .Members}}
