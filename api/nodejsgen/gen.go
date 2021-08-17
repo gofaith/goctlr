@@ -14,7 +14,7 @@ import (
 const (
 	baseTemplate = `
 var server='http://localhost:8888'
-export function apiRequest(method,uri,body,onOk,onFail,eventually,headers){
+export function apiRequest(method,uri,body,onOk,onFail,eventually,headers,onProgress){
     var xhr=new XMLHttpRequest();
     xhr.onreadystatechange=function(e){
         if(xhr.readyState==4){
@@ -47,6 +47,17 @@ export function apiRequest(method,uri,body,onOk,onFail,eventually,headers){
 			xhr.setRequestHeader(key,headers[key]);
 		}
 	}
+
+    //progress
+    if (onProgress){
+        xhr.upload.addEventListener('progress',function(ev){
+            if(ev.lengthComputable){
+                let percent=Math.round(ev.loaded*100/ev.total);
+                onProgress(percent,ev.loaded,ev.total);
+            }
+        })
+    }
+
     if(body){
         if (typeof body == 'string'){
 			xhr.setRequestHeader('Content-Type','application/json')
@@ -68,8 +79,8 @@ export function apiRequest(method,uri,body,onOk,onFail,eventually,headers){
 	apiTemplate = `import {apiRequest} from './base'
 {{with .Service}}{{range .Routes}}
 //{{.Summary}}
-export function {{routeToFuncName .Method .Path}}(req,onOk,onFail,eventually,headers){
-    apiRequest('{{upperCase .Method}}','{{.Path}}',req,onOk,onFail,eventually,headers)
+export function {{routeToFuncName .Method .Path}}(req,onOk,onFail,eventually,headers,onProgress){
+    apiRequest('{{upperCase .Method}}','{{.Path}}',req,onOk,onFail,eventually,headers,onProgress)
 }{{end}}{{end}}`
 )
 
