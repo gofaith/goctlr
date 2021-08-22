@@ -20,15 +20,36 @@ const (
 import 'dart:convert';
 import 'dart:io';
 
-final server = 'http://localhost';
+class ErrorCode {
+	int code;
+	String desc;
+	ErrorCode({
+	this.code = 0,
+	this.desc = '',
+	});
+	factory ErrorCode.fromJson(Map<String, dynamic> jsonObject) {
+	return ErrorCode(
+		code: jsonObject['code'],
+		desc: jsonObject['desc'],
+	);
+	}
+	Map<String, dynamic> toJson() {
+	return {
+		'code': code,
+		'desc': desc,
+	};
+	}
+}
+
+final server = 'https://api.cattired.com';
 
 Future apiRequest(
 	String method,
 	String uri,
 	dynamic body,
-	Function(String) onOk,
-	Function(String) onFail,
-	Function() eventually) async {
+	Function(String)? onOk,
+	Function(ErrorCode)? onFail,
+	Function()? eventually) async {
 	final client = HttpClient();
 	final req = await client.openUrl(method, Uri.parse(server + uri));
 	req.headers.add('Content-Type', 'application/json');
@@ -50,27 +71,18 @@ Future apiRequest(
 
 	final str = await completer.future;
 	if (res.statusCode == 200) {
-	if (onOk != null) {
-		print('ok');
-		onOk(str);
-	}
+	onOk?.call(str);
 	} else {
 	try {
-		Map<String, dynamic> e = jsonDecode(str);
-		if (onFail != null) {
-		onFail(e['desc']);
-		}
+		onFail?.call(ErrorCode.fromJson(jsonDecode(str)));
 	} catch (e) {
-		if (onFail != null) {
-		onFail('${res.statusCode}:$str');
-		}
+		onFail?.call(ErrorCode(code: -1,desc: '${res.statusCode}:$str'));
 	}
 	}
 
-	if (eventually != null) {
-	eventually();
-	}
+	eventually?.call();
 }
+	
 	
 `
 	apiApiTemplate = `import 'dart:convert';
@@ -81,7 +93,7 @@ class {{.Name}} {
 	/// {{.Comment}}
 	{{toDartType .Type}} {{lowCamelCase .Name}};{{end}}
 	{{.Name}}({{if ne 0 (len .Members)}}{ {{range .Members}}
-		this.{{lowCamelCase .Name}},{{end}}
+		this.{{lowCamelCase .Name}} = {{dartDefaultValue .Type}},{{end}}
 	}{{end}});
 	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) {
 		return {{.Name}}({{range .Members}}
@@ -101,9 +113,9 @@ class {{.Name}} {
 class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
 	static Future {{routeToFuncName .Method .Path}}(
 		{{with .RequestType}}{{if ne .Name ""}}{{.Name}}{{else}}dynamic{{end}} req,{{end}}
-		{Function({{with .ResponseType}}{{.Name}}{{end}}) onOk,
-		Function(String) onFail,
-		Function() eventually}
+		{Function({{with .ResponseType}}{{.Name}}{{end}})? onOk,
+		Function(ErrorCode)? onFail,
+		Function()? eventually}
 	) async {
 		await apiRequest('{{upperCase .Method}}', '{{.Path}}',req,(data){
 			{{with .ResponseType}}{{if ne .Name ""}}

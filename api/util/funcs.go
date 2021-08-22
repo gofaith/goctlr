@@ -18,6 +18,7 @@ var FuncsMap = template.FuncMap{
 	"toKtType":            toKtType,
 	"toTsType":            toTsType,
 	"tsDefaultValue":      tsDefaultValue,
+	"dartDefaultValue":    dartDefaultValue,
 	"toJavaType":          toJavaType,
 	"toJavaPrimitiveType": toJavaPrimitiveType,
 	"isJavaTypeNullable":  isJavaTypeNullable,
@@ -208,6 +209,25 @@ func tsDefaultValue(typ string) string {
 		return `false`
 	default:
 		return `new ` + typ + `()`
+	}
+}
+func dartDefaultValue(typ string) string {
+	typ = toDartType(typ)
+	if strings.HasPrefix(typ, "List<") {
+		return `[]`
+	}
+	if strings.HasPrefix(typ, "Map<") {
+		return `{}`
+	}
+	switch typ {
+	case "String":
+		return `''`
+	case "int", "double":
+		return "0"
+	case "bool":
+		return `false`
+	default:
+		return typ + `()`
 	}
 }
 
