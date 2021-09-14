@@ -14,7 +14,6 @@ import (
 const (
 	apiBaseTemplate = `package {{.}}
 
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
@@ -28,7 +27,7 @@ const val SERVER = "http://localhost:8080"
 suspend fun apiRequest(
     method: String,
     uri: String,
-    body: Any = "",
+    body: String = "",
     onOk: ((String) -> Unit)? = null,
     onFail: ((String) -> Unit)? = null,
     eventually: (() -> Unit)? = null
@@ -41,16 +40,8 @@ suspend fun apiRequest(
         if (method == "POST" || method == "PUT" || method == "PATCH") {
             setRequestProperty("Content-Type", "application/json")
             doOutput = true
-            val data = when (body) {
-                is String -> {
-                    body
-                }
-                else -> {
-                    Gson().toJson(body)
-                }
-            }
             val wr = OutputStreamWriter(outputStream)
-            wr.write(data)
+            wr.write(body)
             wr.flush()
         }
 
@@ -76,10 +67,14 @@ suspend fun apiRequest(
 `
 	apiTemplate = `package {{with .Info}}{{.Desc}}{{end}}
 
-import com.google.gson.Gson
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.Serializable
 
 object {{with .Info}}{{.Title}}{{end}}{
 	{{range .Types}}
+	@Serializable
 	{{if eq 0 (len .Members)}}class {{.Name}} {} {{else}}data class {{.Name}}({{$length := (len .Members)}}{{range $i,$item := .Members}}
 		val {{with $item}}{{lowCamelCase .Name}}: {{toKtType .Type}}{{end}}{{if ne $i (add $length -1)}},{{end}}{{end}}
 	){{end}}{{end}}
@@ -90,8 +85,8 @@ object {{with .Info}}{{.Title}}{{end}}{
         onFail: ((String) -> Unit)? = null,
         eventually: (() -> Unit)? = null
     ){
-        apiRequest("{{upperCase .Method}}","{{.Path}}",{{with .RequestType}}{{if ne .Name ""}}body=req,{{end}}{{end}} onOk = { {{with .ResponseType}}
-            onOk?.invoke({{if ne .Name ""}}Gson().fromJson(it,{{.Name}}::class.java){{end}}){{end}}
+        apiRequest("{{upperCase .Method}}","{{.Path}}",{{with .RequestType}}{{if ne .Name ""}}body=Json.encodeToString(req),{{end}}{{end}} onOk = { {{with .ResponseType}}
+            onOk?.invoke({{if ne .Name ""}}Json.decodeFromString(it){{end}}){{end}}
         }, onFail = onFail, eventually =eventually)
     }
 	{{end}}{{end}}
