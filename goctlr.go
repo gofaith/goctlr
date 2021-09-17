@@ -8,6 +8,7 @@ import (
 	"github.com/gofaith/goctlr/api/apigen"
 	"github.com/gofaith/goctlr/api/dartgen"
 	"github.com/gofaith/goctlr/api/format"
+	"github.com/gofaith/goctlr/api/gocligen"
 	"github.com/gofaith/goctlr/api/gogen"
 	"github.com/gofaith/goctlr/api/javagen"
 	"github.com/gofaith/goctlr/api/jsgen"
@@ -102,6 +103,21 @@ var (
 						},
 					},
 					Action: gogen.GoCommand,
+				},
+				{
+					Name:  "gocli",
+					Usage: "generate go client api files",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "dir",
+							Usage: "the target dir",
+						},
+						cli.StringFlag{
+							Name:  "api",
+							Usage: "the api file",
+						},
+					},
+					Action: gocligen.GocliCommand,
 				},
 				{
 					Name:  "java",
