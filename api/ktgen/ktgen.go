@@ -13,57 +13,96 @@ import (
 
 const (
 	apiBaseTemplate = `package {{.}}
+	package com.xchat.stevenzack.langenius.network.api
 
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.util.*
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
 
-const val SERVER = "http://localhost:8080"
+@Serializable
+data class ErrorCode(
+	val code:Int,
+	val desc:String,
+)
+
+private val SERVER:String = "http://localhost:8888"
+private val client= HttpClient(CIO){
+	expectSuccess = false
+	install(HttpTimeout){
+		requestTimeoutMillis = 5000
+	}
+}
 
 suspend fun apiRequest(
-    method: String,
-    uri: String,
-    body: String = "",
-    onOk: ((String) -> Unit)? = null,
-    onFail: ((String) -> Unit)? = null,
-    eventually: (() -> Unit)? = null
+	method: String,
+	uri: String,
+	body: String = "{}",
+	onOk: ((String) -> Unit)? = null,
+	onFail: ((ErrorCode) -> Unit)? = null,
+	eventually: (() -> Unit)? = null
 ) = withContext(Dispatchers.IO) {
-    val url = URL(SERVER + uri)
-    with(url.openConnection() as HttpURLConnection) {
-        connectTimeout = 3000
-        requestMethod = method
-        doInput = true
-        if (method == "POST" || method == "PUT" || method == "PATCH") {
-            setRequestProperty("Content-Type", "application/json")
-            doOutput = true
-            val wr = OutputStreamWriter(outputStream)
-            wr.write(body)
-            wr.flush()
-        }
+	try {
+		val response: HttpResponse = client.request(SERVER + uri) {
+			this.method = HttpMethod.parse(method)
+			header("Content-Type", "application/json")
+			header("Accept-Encoding","gzip")
 
-         try {
-            if (responseCode >= 400) {
-                BufferedReader(InputStreamReader(errorStream)).use {
-                    val response = it.readText()
-                    onFail?.invoke(response)
-                }
-                return@with
-            }
-            //response
-            BufferedReader(InputStreamReader(inputStream)).use {
-                val response = it.readText()
-                onOk?.invoke(response)
-            }
-        } catch (e: Exception) {
-            e.message?.let { onFail?.invoke(it) }
-        }
-    }
-    eventually?.invoke()
+			if (body.length > 1024) {
+				header("Content-Encoding", "gzip")
+				val out = ByteArrayOutputStream()
+				GZIPOutputStream(out).bufferedWriter().use { it.write(body) }
+				this.body = out.toByteArray()
+			}else{
+				this.body = body
+			}
+		}
+
+		val rp=if (response.headers["Content-Encoding"] == "gzip") {
+			GZIPInputStream(ByteArrayInputStream(response.readBytes())).bufferedReader().use {
+				it.readText()
+			}
+		}else{
+			response.receive()
+		}
+
+		when (response.status.value) {
+			200 -> {
+				onOk?.invoke(rp)
+			}
+			400 -> {
+				if (rp.startsWith("{")) {
+					onFail?.invoke(Json.decodeFromString(rp))
+				}else{
+					onFail?.invoke(ErrorCode(0,"${response.status.value}:$rp"))
+				}
+			}
+			else -> {
+				onFail?.invoke(ErrorCode(0,"${response.status.value}:$rp"))
+			}
+		}
+	} catch (e:Exception) {
+		e.printStackTrace()
+		onFail?.invoke(ErrorCode(0,"exception: ${e.localizedMessage?:""}"))
+	}finally {
+		eventually?.invoke()
+	}
 }
+	
 `
 	apiTemplate = `package {{with .Info}}{{.Desc}}{{end}}
 
@@ -82,7 +121,7 @@ object {{with .Info}}{{.Title}}{{end}}{
 	{{range .Routes}}suspend fun {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}
 		req:{{.Name}},{{end}}{{end}}
 		onOk: (({{with .ResponseType}}{{.Name}}{{end}}) -> Unit)? = null,
-        onFail: ((String) -> Unit)? = null,
+        onFail: ((ErrorCode) -> Unit)? = null,
         eventually: (() -> Unit)? = null
     ){
         apiRequest("{{upperCase .Method}}","{{.Path}}",{{with .RequestType}}{{if ne .Name ""}}body=Json.encodeToString(req),{{end}}{{end}} onOk = { {{with .ResponseType}}
