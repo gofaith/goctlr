@@ -13,7 +13,6 @@ import (
 
 const (
 	apiBaseTemplate = `package {{.}}
-	package com.xchat.stevenzack.langenius.network.api
 
 import io.ktor.client.*
 import io.ktor.client.call.*
