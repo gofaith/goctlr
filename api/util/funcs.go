@@ -154,8 +154,12 @@ func toKtType(t string) string {
 		return "String"
 	case "int32":
 		return "Int"
+	case "uint32":
+		return "UInt"
 	case "int", "int64":
 		return "Long"
+	case "uint","uint64":
+		return "ULong"
 	case "float", "float32", "float64":
 		return "Double"
 	case "bool":
