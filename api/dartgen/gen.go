@@ -27,29 +27,19 @@ class ErrorCode {
 	this.code = 0,
 	this.desc = '',
 	});
-	factory ErrorCode.fromJson(Map<String, dynamic> jsonObject) {
-	return ErrorCode(
+	factory ErrorCode.fromJson(Map<String, dynamic> jsonObject) => ErrorCode(
 		code: jsonObject['code'],
 		desc: jsonObject['desc'],
-	);
-	}
-	Map<String, dynamic> toJson() {
-	return {
+		);
+	Map<String, dynamic> toJson() => {
 		'code': code,
 		'desc': desc,
-	};
-	}
+		};
 }
 
-final server = 'https://api.cattired.com';
+const server = 'https://api.example.com';
 
-Future apiRequest(
-	String method,
-	String uri,
-	dynamic body,
-	Function(String)? onOk,
-	Function(ErrorCode)? onFail,
-	Function()? eventually) async {
+Future apiRequest(String method, String uri, dynamic body, Function(String)? onOk, Function(ErrorCode)? onFail, Function()? eventually) async {
 	final client = HttpClient();
 	final req = await client.openUrl(method, Uri.parse(server + uri));
 	req.headers.add('Content-Type', 'application/json');
@@ -64,7 +54,7 @@ Future apiRequest(
 	res.transform(utf8.decoder).listen((data) {
 	buf.write(data);
 	}, onError: (e) {
-	print(e);
+	onFail?.call(ErrorCode(desc: e.toString()));
 	}, onDone: () {
 	completer.complete(buf.toString());
 	}, cancelOnError: true);
@@ -76,13 +66,12 @@ Future apiRequest(
 	try {
 		onFail?.call(ErrorCode.fromJson(jsonDecode(str)));
 	} catch (e) {
-		onFail?.call(ErrorCode(code: -1,desc: '${res.statusCode}:$str'));
+		onFail?.call(ErrorCode(code: -1, desc: '${res.statusCode}:$str'));
 	}
 	}
 
 	eventually?.call();
 }
-	
 	
 `
 	apiApiTemplate = `import 'dart:convert';
@@ -95,18 +84,14 @@ class {{.Name}} {
 	{{.Name}}({{if ne 0 (len .Members)}}{ {{range .Members}}
 		this.{{lowCamelCase .Name}} = {{dartDefaultValue .Type}},{{end}}
 	}{{end}});
-	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) {
-		return {{.Name}}({{range .Members}}
-			{{lowCamelCase .Name}}: {{if isDirectType .Type}}jsonObject['{{tagGet .Tag "json"}}']{{else if isClassListType .Type}}(jsonObject['{{tagGet .Tag "json"}}'] as List<dynamic>)
-				.map((i)=>{{getCoreType .Type}}.fromJson(i))
-				.toList(){{else}}{{.Type}}.fromJson(jsonObject['{{tagGet .Tag "json"}}']){{end}},{{end}}
-		);
-	}
-	Map<String, dynamic> toJson() {
-		return { {{range .Members}}
-			'{{tagGet .Tag "json"}}': {{if isDirectType .Type}}{{lowCamelCase .Name}}{{else if isClassListType .Type}}{{lowCamelCase .Name}}.map((i) => i.toJson()).toList(){{else}}{{lowCamelCase .Name}}.toJson(){{end}},{{end}}
-		};
-	}
+	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) => {{.Name}}({{range .Members}}
+		{{lowCamelCase .Name}}: {{if isDirectType .Type}}jsonObject['{{tagGet .Tag "json"}}']{{else if isClassListType .Type}}(jsonObject['{{tagGet .Tag "json"}}'] as List<dynamic>)
+			.map((i)=>{{getCoreType .Type}}.fromJson(i))
+			.toList(){{else}}{{.Type}}.fromJson(jsonObject['{{tagGet .Tag "json"}}']){{end}},{{end}}
+	);
+	Map<String, dynamic> toJson() => { {{range .Members}}
+		'{{tagGet .Tag "json"}}': {{if isDirectType .Type}}{{lowCamelCase .Name}}{{else if isClassListType .Type}}{{lowCamelCase .Name}}.map((i) => i.toJson()).toList(){{else}}{{lowCamelCase .Name}}.toJson(){{end}},{{end}}
+	};
 }
 {{end}}
 
@@ -118,12 +103,11 @@ class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
 		Function()? eventually}
 	) async {
 		await apiRequest('{{upperCase .Method}}', '{{.Path}}',req,(data){
-			{{with .ResponseType}}{{if ne .Name ""}}
-			if (onOk != null){
+			if (onOk != null){ {{with .ResponseType}}{{if ne .Name ""}}
 				final res = {{.Name}}.fromJson(jsonDecode(data));
-				onOk(res);
-			}
-			{{end}}{{end}}
+				onOk(res);{{else}}
+				onOk();{{end}}
+			}{{end}}
 		},onFail,eventually);
 	}{{end}}
 }
@@ -156,9 +140,8 @@ func genApi(dir string, api *spec.ApiSpec) error {
 	if e != nil {
 		return e
 	}
-	name := strcase.ToCamel(api.Info.Title + "Api")
-	path := filepath.Join(dir, name+".dart")
-	api.Info.Title = name
+	api.Info.Title = strcase.ToCamel(api.Info.Title + "Api")
+	path := filepath.Join(dir, strcase.ToSnake(api.Info.Title)+".dart")
 
 	file, e := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if e != nil {

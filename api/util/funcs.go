@@ -39,7 +39,8 @@ func isDirectType(s string) bool {
 
 func isAtomicType(s string) bool {
 	switch s {
-	case "string", "bool", "uint8", "uint16", "uint32", "uint", "uint64", "int8", "int16", "int32", "int", "int64", "float32", "float64":
+	case "string", "bool", "uint8", "uint16", "uint32", "uint", "uint64", "int8", "int16", "int32", "int", "int64", "float32", "float64",
+		"map[string]interface{}":
 		return true
 	default:
 		return false
@@ -127,6 +128,8 @@ func toDartType(t string) string {
 		return "double"
 	case "bool":
 		return "bool"
+	case "interface{}":
+		return "dynamic"
 	default:
 		return t
 	}
@@ -158,7 +161,7 @@ func toKtType(t string) string {
 		return "UInt"
 	case "int", "int64":
 		return "Long"
-	case "uint","uint64":
+	case "uint", "uint64":
 		return "ULong"
 	case "float", "float32", "float64":
 		return "Double"
@@ -220,10 +223,10 @@ func tsDefaultValue(typ string) string {
 func dartDefaultValue(typ string) string {
 	typ = toDartType(typ)
 	if strings.HasPrefix(typ, "List<") {
-		return `[]`
+		return `const []`
 	}
 	if strings.HasPrefix(typ, "Map<") {
-		return `{}`
+		return `const {}`
 	}
 	switch typ {
 	case "String":
