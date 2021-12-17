@@ -98,7 +98,7 @@ class {{.Name}} {
 class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
 	static Future {{routeToFuncName .Method .Path}}(
 		{{with .RequestType}}{{if ne .Name ""}}{{.Name}}{{else}}dynamic{{end}} req,{{end}}
-		{Function({{with .ResponseType}}{{.Name}}{{end}} res)? onOk,
+		{Function({{if ne .ResponseType.Name ""}}{{.ResponseType.Name}} res{{end}})? onOk,
 		Function(ErrorCode e)? onFail,
 		Function()? eventually}
 	) async {
