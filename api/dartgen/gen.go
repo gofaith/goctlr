@@ -41,42 +41,52 @@ const server = 'https://api.example.com';
 
 Future apiRequest(String method, String uri, dynamic body, Function(String)? onOk, Function(ErrorCode)? onFail, Function()? eventually) async {
 	final client = HttpClient();
-	final req = await client.openUrl(method, Uri.parse(server + uri));
-	req.headers.add('Content-Type', 'application/json');
-	if (body != null) {
-	req.write(jsonEncode(body));
-	}
-
-	final res = await req.close();
-
-	final buf = StringBuffer();
-	final completer = Completer<String>();
-	res.transform(utf8.decoder).listen((data) {
-	buf.write(data);
-	}, onError: (e) {
-	onFail?.call(ErrorCode(desc: e.toString()));
-	}, onDone: () {
-	completer.complete(buf.toString());
-	}, cancelOnError: true);
-
-	final str = await completer.future;
-	if (res.statusCode == 200) {
-	onOk?.call(str);
-	} else {
 	try {
-		onFail?.call(ErrorCode.fromJson(jsonDecode(str)));
-	} catch (e) {
-		onFail?.call(ErrorCode(code: -1, desc: '${res.statusCode}:$str'));
-	}
-	}
+		final req = await client.openUrl(method, Uri.parse(server + uri));
+		req.headers.add('Content-Type', 'application/json; charset=utf-8');
+		if (body != null) {
+			req.write(jsonEncode(body));
+		}
 
+		final res = await req.close();
+
+		final buf = StringBuffer();
+		final completer = Completer<String>();
+		res.transform(utf8.decoder).listen((data) {
+			buf.write(data);
+		}, onError: (e) {
+			onFail?.call(ErrorCode(desc: e.toString()));
+		}, onDone: () {
+			completer.complete(buf.toString());
+		}, cancelOnError: true);
+
+		final str = await completer.future;
+		if (res.statusCode == 200) {
+			onOk?.call(str);
+		} else {
+		try {
+			onFail?.call(ErrorCode.fromJson(jsonDecode(str)));
+		} catch (e) {
+			onFail?.call(ErrorCode(code: res.statusCode, desc: '${res.statusCode}:$str'));
+		}
+		}
+	} catch (e, stack) {
+		// ignore: avoid_print
+		print(stack);
+		onFail?.call(ErrorCode(desc: e.toString()));
+	}
 	eventually?.call();
-}
+}  
 	
 `
 	apiApiTemplate = `import 'dart:convert';
 import './base.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part '{{snakeCase .Info.Title}}.g.dart';
+
 {{range .Types}}
+@JsonSerializable()
 class {{.Name}} {
 	{{range .Members}}
 	/// {{.Comment}}
@@ -84,14 +94,8 @@ class {{.Name}} {
 	{{.Name}}({{if ne 0 (len .Members)}}{ {{range .Members}}
 		this.{{lowCamelCase .Name}} = {{dartDefaultValue .Type}},{{end}}
 	}{{end}});
-	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) => {{.Name}}({{range .Members}}
-		{{lowCamelCase .Name}}: {{if isDirectType .Type}}jsonObject['{{tagGet .Tag "json"}}']{{else if isClassListType .Type}}(jsonObject['{{tagGet .Tag "json"}}'] as List<dynamic>)
-			.map((i)=>{{getCoreType .Type}}.fromJson(i))
-			.toList(){{else}}{{.Type}}.fromJson(jsonObject['{{tagGet .Tag "json"}}']){{end}}{{if eq (toDartType .Type) "double"}}.toDouble(){{end}},{{end}}
-	);
-	Map<String, dynamic> toJson() => { {{range .Members}}
-		'{{tagGet .Tag "json"}}': {{if isDirectType .Type}}{{lowCamelCase .Name}}{{else if isClassListType .Type}}{{lowCamelCase .Name}}.map((i) => i.toJson()).toList(){{else}}{{lowCamelCase .Name}}.toJson(){{end}},{{end}}
-	};
+	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) => _${{.Name}}FromJson(jsonObject);
+	Map<String, dynamic> toJson() => _${{.Name}}ToJson(this);
 }
 {{end}}
 

@@ -14,6 +14,7 @@ var FuncsMap = template.FuncMap{
 	"tagTail":             tagTail,
 	"lowCamelCase":        strcase.ToLowerCamel,
 	"camelCase":           strcase.ToCamel,
+	"snakeCase":           strcase.ToSnake,
 	"routeToFuncName":     RouteToFuncName,
 	"toKtType":            toKtType,
 	"toTsType":            toTsType,
