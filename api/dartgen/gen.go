@@ -87,7 +87,7 @@ class {{.Name}} {
 	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) => {{.Name}}({{range .Members}}
 		{{lowCamelCase .Name}}: {{if isDirectType .Type}}jsonObject['{{tagGet .Tag "json"}}']{{else if isClassListType .Type}}(jsonObject['{{tagGet .Tag "json"}}'] as List<dynamic>)
 			.map((i)=>{{getCoreType .Type}}.fromJson(i))
-			.toList(){{else}}{{.Type}}.fromJson(jsonObject['{{tagGet .Tag "json"}}']){{end}},{{end}}
+			.toList(){{else}}{{.Type}}.fromJson(jsonObject['{{tagGet .Tag "json"}}']){{end}}{{if eq (toDartType .Type) "double"}}.toDouble(){{end}},{{end}}
 	);
 	Map<String, dynamic> toJson() => { {{range .Members}}
 		'{{tagGet .Tag "json"}}': {{if isDirectType .Type}}{{lowCamelCase .Name}}{{else if isClassListType .Type}}{{lowCamelCase .Name}}.map((i) => i.toJson()).toList(){{else}}{{lowCamelCase .Name}}.toJson(){{end}},{{end}}
