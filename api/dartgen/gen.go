@@ -37,47 +37,90 @@ class ErrorCode {
 		};
 }
 
-const server = 'https://api.example.com';
 
 Future apiRequest(String method, String uri, dynamic body, Function(String)? onOk, Function(ErrorCode)? onFail, Function()? eventually) async {
-	final client = HttpClient();
+	final sp = await SharedPreferences.getInstance();
+	BaseRequest req = Request(method, Uri.parse(await _getServer(sp) + uri));
+	final token = sp.getString('token') ?? '';
+  
 	try {
-		final req = await client.openUrl(method, Uri.parse(server + uri));
-		req.headers.add('Content-Type', 'application/json; charset=utf-8');
-		if (body != null) {
-			req.write(jsonEncode(body));
+	  if (body is MultipartRequest) {
+		// Multipart
+		final r = MultipartRequest(method, Uri.parse(await _getServer(sp) + uri));
+		if (token.isNotEmpty) {
+		  r.headers['Authorization'] = token;
 		}
-
-		final res = await req.close();
-
-		final buf = StringBuffer();
-		final completer = Completer<String>();
-		res.transform(utf8.decoder).listen((data) {
-			buf.write(data);
-		}, onError: (e) {
-			onFail?.call(ErrorCode(desc: e.toString()));
-		}, onDone: () {
-			completer.complete(buf.toString());
-		}, cancelOnError: true);
-
-		final str = await completer.future;
-		if (res.statusCode == 200) {
-			onOk?.call(str);
-		} else {
+		body.fields.forEach((key, value) {
+		  r.fields[key] = value;
+		});
+		r.files.addAll(body.files);
+		req = r;
+	  } else if (body is File) {
+		// File
+		final r = Request(method, Uri.parse(await _getServer(sp) + uri));
+		r.headers['Content-Type'] = 'application/octet-stream';
+		if (token.isNotEmpty) {
+		  r.headers['Authorization'] = token;
+		}
+		final fi = body;
+		r.bodyBytes = List.from(fi.readAsBytesSync());
+		req = r;
+	  } else if (body != null) {
+		// Json
+		final r = Request(method, Uri.parse(await _getServer(sp) + uri));
+		r.headers['Content-Type'] = 'application/json; charset=utf-8';
+		if (token.isNotEmpty) {
+		  r.headers['Authorization'] = token;
+		}
+		r.body = jsonEncode(body);
+		req = r;
+	  } else {
+		if (token.isNotEmpty) {
+		  req.headers['Authorization'] = token;
+		}
+	  }
+  
+	  final res = await req.send();
+	  final str = await res.stream.bytesToString();
+	  if (res.statusCode == 200) {
+		onOk?.call(str);
+	  } else {
 		try {
-			onFail?.call(ErrorCode.fromJson(jsonDecode(str)));
+		  onFail?.call(ErrorCode.fromJson(jsonDecode(str)));
 		} catch (e) {
-			onFail?.call(ErrorCode(code: res.statusCode, desc: '${res.statusCode}:$str'));
+		  onFail?.call(ErrorCode(code: res.statusCode, desc: '${res.statusCode}:$str'));
 		}
-		}
+	  }
 	} catch (e, stack) {
-		// ignore: avoid_print
-		print(stack);
-		onFail?.call(ErrorCode(desc: e.toString()));
+	  // ignore: avoid_print
+	  print(stack);
+	  updateServer(sp);
+	  onFail?.call(ErrorCode(desc: e.toString()));
 	}
 	eventually?.call();
-}  
-	
+  }
+  
+  const _serverKey = '--server--';
+  Future<String> _getServer(SharedPreferences sp) async {
+	final s = sp.getString(_serverKey) ?? '';
+	if (s.isEmpty) {
+	  return await updateServer(sp);
+	}
+	return s;
+  }
+  
+  Future<String> updateServer(SharedPreferences sp) async {
+	final results = await DnsUtils.lookupRecord('_server.example.com', RRecordType.TXT);
+	if (results != null && results.isNotEmpty) {
+	  final s = results[0].data;
+	  sp.setString(_serverKey, s);
+	  if (kDebugMode) {
+		print('server updated:$s');
+	  }
+	  return s;
+	}
+	return '';
+  }
 `
 	apiApiTemplate = `import 'dart:convert';
 import './base.dart';
@@ -92,7 +135,7 @@ class {{.Name}} {
 	/// {{.Comment}}
 	{{toDartType .Type}} {{lowCamelCase .Name}};{{end}}
 	{{.Name}}({{if ne 0 (len .Members)}}{ {{range .Members}}
-		this.{{lowCamelCase .Name}} = {{dartDefaultValue .Type}},{{end}}
+		this.{{lowCamelCase .Name}}{{if ne (dartDefaultValue .Type) ""}} = {{dartDefaultValue .Type}}{{end}},{{end}}
 	}{{end}});
 	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) => _${{.Name}}FromJson(jsonObject);
 	Map<String, dynamic> toJson() => _${{.Name}}ToJson(this);

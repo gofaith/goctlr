@@ -132,7 +132,7 @@ func toDartType(t string) string {
 	case "interface{}":
 		return "dynamic"
 	default:
-		return t
+		return t + "?"
 	}
 }
 
@@ -237,6 +237,9 @@ func dartDefaultValue(typ string) string {
 	case "bool":
 		return `false`
 	default:
+		if strings.HasSuffix(typ, "?") {
+			return ""
+		}
 		return typ + `()`
 	}
 }
