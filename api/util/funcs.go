@@ -104,9 +104,12 @@ func isJavaTypeNullable(t string) bool {
 	}
 }
 func toDartType(t string) string {
+	return toDartType2(t, true)
+}
+func toDartType2(t string, nullable bool) string {
 	t = strings.Replace(t, "*", "", -1)
 	if strings.HasPrefix(t, "[]") {
-		return "List<" + toDartType(t[2:]) + ">"
+		return "List<" + toDartType2(t[2:], false) + ">"
 	}
 
 	if strings.HasPrefix(t, "map") {
@@ -117,7 +120,7 @@ func toDartType(t string) string {
 		if len(tys) != 2 {
 			log.Fatal("Map type number !=2")
 		}
-		return "Map<" + toDartType(tys[0]) + "," + toDartType(tys[1]) + ">"
+		return "Map<" + toDartType2(tys[0], false) + "," + toDartType2(tys[1], false) + ">"
 	}
 
 	switch t {
@@ -132,6 +135,9 @@ func toDartType(t string) string {
 	case "interface{}":
 		return "dynamic"
 	default:
+		if !nullable {
+			return t
+		}
 		return t + "?"
 	}
 }

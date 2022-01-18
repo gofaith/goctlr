@@ -133,9 +133,9 @@ part '{{snakeCase .Info.Title}}.g.dart';
 class {{.Name}} {
 	{{range .Members}}
 	/// {{.Comment}}
-	{{toDartType .Type}} {{lowCamelCase .Name}};{{end}}
+	{{toDartType .Type}} {{tagGet .Tag "json"}};{{end}}
 	{{.Name}}({{if ne 0 (len .Members)}}{ {{range .Members}}
-		this.{{lowCamelCase .Name}}{{if ne (dartDefaultValue .Type) ""}} = {{dartDefaultValue .Type}}{{end}},{{end}}
+		this.{{tagGet .Tag "json"}}{{if ne (dartDefaultValue .Type) ""}} = {{dartDefaultValue .Type}}{{end}},{{end}}
 	}{{end}});
 	factory {{.Name}}.fromJson(Map<String, dynamic> jsonObject) => _${{.Name}}FromJson(jsonObject);
 	Map<String, dynamic> toJson() => _${{.Name}}ToJson(this);
