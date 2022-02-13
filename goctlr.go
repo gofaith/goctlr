@@ -98,6 +98,10 @@ var (
 							Usage: ".proto file",
 						},
 						cli.BoolFlag{
+							Name:  "onlyTypes",
+							Usage: "only generate types",
+						},
+						cli.BoolFlag{
 							Name:  "clitest",
 							Usage: "generate client folder and test folder",
 						},

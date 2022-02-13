@@ -28,6 +28,7 @@ func GoCommand(c *cli.Context) error {
 	apiFile := c.String("api")
 	dir := c.String("dir")
 	proto := c.String("proto")
+	onlyTypes := c.Bool("onlyTypes")
 	if len(apiFile) == 0 {
 		return errors.New("missing -api")
 	}
@@ -91,6 +92,10 @@ func GoCommand(c *cli.Context) error {
 		//generate
 		for _, api := range apiList {
 			logx.Must(util.MkdirIfNotExist(dir))
+			if onlyTypes {
+				logx.Must(genTypes(dir, api))
+				continue
+			}
 			logx.Must(genEtc(dir, api))
 			logx.Must(genConfig(dir))
 			logx.Must(genServiceContext(dir, api))
@@ -119,6 +124,10 @@ func GoCommand(c *cli.Context) error {
 			return e
 		}
 
+		if onlyTypes {
+			logx.Must(genTypes(dir, api))
+			return nil
+		}
 		logx.Must(util.MkdirIfNotExist(dir))
 		logx.Must(genEtc(dir, api))
 		logx.Must(genConfig(dir))
