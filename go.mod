@@ -3,6 +3,7 @@ module github.com/gofaith/goctlr
 go 1.15
 
 require (
+	github.com/StevenZack/cmd v1.1.0 // indirect
 	github.com/StevenZack/tools v1.11.5
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/dsymonds/gotoc v0.0.0-20160928043926-5aebcfc91819
