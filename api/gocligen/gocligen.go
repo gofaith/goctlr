@@ -33,8 +33,13 @@ type ErrorCode struct {
 	Desc string ` + "`" + `json:"desc"` + "`" + `
 }
 
+func (e *ErrorCode) Error() string {
+	b, _ := json.Marshal(e)
+	return string(b)
+}
+
 const (
-	server = "http://localhost:8888"
+	server = "http://localhost"
 )
 
 var (
@@ -43,62 +48,28 @@ var (
 	}
 )
 
-func apiRequest(method, uri string, req interface{}, onOk func(string), onFail func(ErrorCode), ev func()) {
-	if ev != nil {
-		defer ev()
-	}
-
+func apiRequest(method, uri string, req interface{}) (string, error) {
 	var bodyReader io.Reader
-	var isGzipped bool
 	if req != nil {
 		b, e := json.Marshal(req)
 		if e != nil {
 			log.Println(e)
-			if onFail != nil {
-				onFail(ErrorCode{Desc: e.Error()})
-				return
-			}
+			return "", &ErrorCode{Desc: e.Error()}
 		}
-
-		if len(b) > 1024 {
-			isGzipped = true
-			buf := new(bytes.Buffer)
-			zw := gzip.NewWriter(buf)
-			_, e = zw.Write(b)
-			if e != nil {
-				log.Println(e)
-				if onFail != nil {
-					onFail(ErrorCode{Desc: e.Error()})
-					return
-				}
-			}
-			zw.Close()
-			bodyReader = buf
-		} else {
-			bodyReader = bytes.NewReader(b)
-		}
+		bodyReader = bytes.NewReader(b)
 	}
 	r, e := http.NewRequest(method, server+uri, bodyReader)
 	if e != nil {
 		log.Println(e)
-		if onFail != nil {
-			onFail(ErrorCode{Desc: e.Error()})
-			return
-		}
+		return "", &ErrorCode{Desc: e.Error()}
 	}
 	r.Header.Set("Content-Type", "application/json")
-	if isGzipped {
-		r.Header.Set("Content-Encoding", "gzip")
-	}
 
 	//response
 	res, e := client.Do(r)
 	if e != nil {
 		log.Println(e)
-		if onFail != nil {
-			onFail(ErrorCode{Desc: e.Error()})
-			return
-		}
+		return "", &ErrorCode{Desc: e.Error()}
 	}
 	defer res.Body.Close()
 
@@ -107,93 +78,70 @@ func apiRequest(method, uri string, req interface{}, onOk func(string), onFail f
 		zr, e := gzip.NewReader(res.Body)
 		if e != nil {
 			log.Println(e)
-			if onFail != nil {
-				onFail(ErrorCode{Desc: e.Error()})
-				return
-			}
+			return "", &ErrorCode{Desc: e.Error()}
 		}
 		defer zr.Close()
 		buf := new(bytes.Buffer)
 		_, e = io.Copy(buf, zr)
 		if e != nil {
 			log.Println(e)
-			if onFail != nil {
-				onFail(ErrorCode{Desc: e.Error()})
-				return
-			}
+			return "", &ErrorCode{Desc: e.Error()}
 		}
 		rp = buf.String()
 	} else {
 		b, e := io.ReadAll(res.Body)
 		if e != nil {
 			log.Println(e)
-			if onFail != nil {
-				onFail(ErrorCode{Desc: e.Error()})
-				return
-			}
+			return "", &ErrorCode{Desc: e.Error()}
 		}
 		rp = string(b)
 	}
 
 	switch res.StatusCode {
 	case 200:
-		if onOk != nil {
-			onOk(rp)
-		}
+		return rp, nil
 	case 400:
 		var err ErrorCode
 		if strings.HasPrefix(rp, "{") {
 			e = json.Unmarshal([]byte(rp), &err)
 			if e != nil {
 				log.Println(e)
-				if onFail != nil {
-					onFail(ErrorCode{Desc: e.Error()})
-					return
-				}
+				return "", &ErrorCode{Desc: e.Error()}
 			}
 		} else {
 			err.Desc = strconv.Itoa(res.StatusCode) + ":" + rp
 		}
-		if onFail != nil {
-			onFail(err)
-		}
+		return "", &err
 	default:
-		if onFail != nil {
-			onFail(ErrorCode{Desc: strconv.Itoa(res.StatusCode) + ":" + rp})
-		}
+		return "", &ErrorCode{Desc: strconv.Itoa(res.StatusCode) + ":" + rp}
 	}
 }
+	
 `
 	apiFilesTemplate = `package {{.Info.Desc}}
 	
 import (
 	"encoding/json"
-	"log"
 )
 
-type (
-	{{range .Types}}
+type ({{range .Types}}
 	{{if eq 0 (len .Members)}}{{.Name}} struct{} {{else}}{{.Name}} struct{ {{range .Members}}
-		{{.Name}}	{{.Type}}	`+"`"+`json:"{{tagGet .Tag "json"}}"`+"`"+` {{end}}
+		{{.Name}}	{{.Type}}	` + "`" + `json:"{{tagGet .Tag "json"}}"` + "`" + ` {{end}}
 	}{{end}}{{end}}
 )
 {{with .Service}}
-{{range .Routes}}func {{camelCase (routeToFuncName .Method .Path)}}({{if ne .RequestType.Name ""}}req {{.RequestType.Name}},{{end}}onOk func({{if ne .ResponseType.Name ""}}res {{.ResponseType.Name}}{{end}}), onFail func(err ErrorCode), eventually func()) {
-	apiRequest("{{upperCase .Method}}", "{{.Path}}", {{if ne .RequestType.Name ""}}req{{else}}nil{{end}}, func(res string){
-		if onOk != nil{ {{if ne .ResponseType.Name ""}}
-			rp := {{.ResponseType.Name}}{}
-			e := json.Unmarshal([]byte(res), &rp)
-			if e != nil {
-				log.Println(e)
-				if onFail != nil {
-					onFail(ErrorCode{Desc: e.Error()})
-					return
-				}
-			}
-			onOk(rp){{else}}
-			onOk(){{end}}
-		}
-	}, onFail, eventually)
+{{range .Routes}}func {{camelCase (routeToFuncName .Method .Path)}}({{if ne .RequestType.Name ""}}req {{.RequestType.Name}}{{end}}) {{if ne .ResponseType.Name ""}}(*{{.ResponseType.Name}}, error){{else}}error{{end}} {
+	{{if ne .ResponseType.Name ""}}res{{else}}_{{end}}, e:= apiRequest("{{upperCase .Method}}", "{{.Path}}", {{if ne .RequestType.Name ""}}req{{else}}nil{{end}})
+	{{if eq .ResponseType.Name ""}}return e{{else}}if e != nil {
+		return nil, e
+	}
+
+	rp := {{.ResponseType.Name}}{}
+	e = json.Unmarshal([]byte(res), &rp)
+	if e != nil {
+		return nil, &ErrorCode{Desc: e.Error()}
+	}
+	return &rp, nil{{end}}
 }
 {{end}}{{end}}
 `
