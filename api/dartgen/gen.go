@@ -38,7 +38,7 @@ class ErrorCode {
 }
 
 
-Future apiRequest(String method, String uri, dynamic body, Function(String)? onOk, Function(ErrorCode)? onFail, Function()? eventually) async {
+Future apiRequest(String method, String uri, dynamic body,Future Function(String)? onOk, Function(ErrorCode)? onFail, Function()? eventually) async {
 	final sp = await SharedPreferences.getInstance();
 	BaseRequest req = Request(method, Uri.parse(await _getServer(sp) + uri));
 	final token = sp.getString('token') ?? '';
@@ -83,7 +83,7 @@ Future apiRequest(String method, String uri, dynamic body, Function(String)? onO
 	  final res = await req.send();
 	  final str = await res.stream.bytesToString();
 	  if (res.statusCode == 200) {
-		onOk?.call(str);
+		await onOk?.call(str);
 	  } else {
 		try {
 		  onFail?.call(ErrorCode.fromJson(jsonDecode(str)));
@@ -145,15 +145,15 @@ class {{.Name}} {
 class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
 	static Future {{routeToFuncName .Method .Path}}(
 		{{with .RequestType}}{{if ne .Name ""}}{{.Name}}{{else}}dynamic{{end}} req,{{end}}
-		{Function({{if ne .ResponseType.Name ""}}{{.ResponseType.Name}} res{{end}})? onOk,
+		{Future Function({{if ne .ResponseType.Name ""}}{{.ResponseType.Name}} res{{end}})? onOk,
 		Function(ErrorCode e)? onFail,
 		Function()? eventually}
 	) async {
-		await apiRequest('{{upperCase .Method}}', '{{.Path}}',req,(data){
+		await apiRequest('{{upperCase .Method}}', '{{.Path}}',req,(data)async {
 			if (onOk != null){ {{with .ResponseType}}{{if ne .Name ""}}
 				final res = {{.Name}}.fromJson(jsonDecode(data));
-				onOk(res);{{else}}
-				onOk();{{end}}
+				await onOk(res);{{else}}
+				await onOk();{{end}}
 			}{{end}}
 		},onFail,eventually);
 	}{{end}}

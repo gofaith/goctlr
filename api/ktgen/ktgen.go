@@ -122,7 +122,7 @@ object {{with .Info}}{{.Title}}{{end}}{
         eventually: (() -> Unit)? = null
     ){
         apiRequest("{{upperCase .Method}}","{{.Path}}",{{with .RequestType}}{{if ne .Name ""}}body=Json.encodeToString(req),{{end}}{{end}} onOk = { {{with .ResponseType}}
-            onOk?.invoke({{if ne .Name ""}}Json.decodeFromString(it){{end}}){{end}}
+            onOk?.invoke({{if ne .Name ""}}Json{ignoreUnknownKeys=true}.decodeFromString(it){{end}}){{end}}
         }, onFail = onFail, eventually =eventually)
     }
 	{{end}}{{end}}
