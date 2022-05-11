@@ -112,7 +112,7 @@ object {{with .Info}}{{.Title}}{{end}}{
 	{{range .Types}}
 	@Serializable
 	{{if eq 0 (len .Members)}}class {{.Name}} {} {{else}}data class {{.Name}}({{$length := (len .Members)}}{{range $i,$item := .Members}}
-		val {{with $item}}{{lowCamelCase .Name}}: {{toKtType .Type}}{{end}}{{if ne $i (add $length -1)}},{{end}}{{end}}
+		val {{with $item}}{{lowCamelCase .Name}}: {{toKtType .Type}} = {{ktDefaultValue .Type}}{{end}}{{if ne $i (add $length -1)}},{{end}}{{end}}
 	){{end}}{{end}}
 	{{with .Service}}
 	{{range .Routes}}suspend fun {{routeToFuncName .Method .Path}}({{with .RequestType}}{{if ne .Name ""}}
