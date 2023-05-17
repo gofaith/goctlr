@@ -124,13 +124,16 @@ import (
 	"encoding/json"
 )
 
+type {{camelCase .Info.Title}}Api struct {
+}
+
 type ({{range .Types}}
 	{{if eq 0 (len .Members)}}{{.Name}} struct{} {{else}}{{.Name}} struct{ {{range .Members}}
 		{{.Name}}	{{.Type}}	` + "`" + `json:"{{tagGet .Tag "json"}}"` + "`" + ` {{end}}
 	}{{end}}{{end}}
 )
 {{with .Service}}
-{{range .Routes}}func {{camelCase (routeToFuncName .Method .Path)}}({{if ne .RequestType.Name ""}}req {{.RequestType.Name}}{{end}}) {{if ne .ResponseType.Name ""}}(*{{.ResponseType.Name}}, error){{else}}error{{end}} {
+{{range .Routes}}func (api *{{camelCase $.Info.Title}}Api) {{camelCase (routeToFuncName .Method .Path)}}({{if ne .RequestType.Name ""}}req {{.RequestType.Name}}{{end}}) {{if ne .ResponseType.Name ""}}(*{{.ResponseType.Name}}, error){{else}}error{{end}} {
 	{{if ne .ResponseType.Name ""}}res{{else}}_{{end}}, e:= apiRequest("{{upperCase .Method}}", "{{.Path}}", {{if ne .RequestType.Name ""}}req{{else}}nil{{end}})
 	{{if eq .ResponseType.Name ""}}return e{{else}}if e != nil {
 		return nil, e
