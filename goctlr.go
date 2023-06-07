@@ -8,6 +8,7 @@ import (
 	"github.com/gofaith/goctlr/api/apigen"
 	"github.com/gofaith/goctlr/api/dartgen"
 	"github.com/gofaith/goctlr/api/format"
+	"github.com/gofaith/goctlr/api/gingen"
 	"github.com/gofaith/goctlr/api/gocligen"
 	"github.com/gofaith/goctlr/api/gogen"
 	"github.com/gofaith/goctlr/api/javagen"
@@ -108,6 +109,27 @@ var (
 					},
 					Action: gogen.GoCommand,
 				},
+
+				{
+					Name:  "gin",
+					Usage: "generate gin-gonic server files for provided api in .api file",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name:  "dir",
+							Usage: "the target dir",
+						},
+						cli.StringFlag{
+							Name:  "api",
+							Usage: "the api file",
+						},
+						cli.BoolFlag{
+							Name:  "onlyTypes",
+							Usage: "only generate types",
+						},
+					},
+					Action: gingen.GoCommand,
+				},
+
 				{
 					Name:  "gocli",
 					Usage: "generate go client api files",
