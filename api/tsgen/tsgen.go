@@ -12,9 +12,7 @@ import (
 )
 
 const (
-	apiBaseTemplate = `import pako from 'pako';
-
-export class ErrorCode{
+	apiBaseTemplate = `export class ErrorCode{
 	public code:number;
 	public desc:string;
 	constructor(code:number,desc:string){
@@ -42,7 +40,7 @@ export function apiRequest(method: string, uri: string, body: any, onOk: (res: s
 					onFail(err)
 				}
 			}catch(e){
-				onFail(new ErrorCode(1,e))
+				onFail(new ErrorCode(1,JSON.stringify(e)))
 			}
 		}
 		if (eventually) {
@@ -58,22 +56,24 @@ export function apiRequest(method: string, uri: string, body: any, onOk: (res: s
 	if (body) {
 		if (typeof body == 'string') {
 			xhr.setRequestHeader('Content-Type', 'application/json')
-			xhr.setRequestHeader('Content-Encoding', 'gzip')
-			xhr.send(pako.gzip(body, { to: 'string' }))
+			xhr.send(body)
 		} else if (body instanceof File || body instanceof Blob) {
 			xhr.setRequestHeader('Content-Type', body.type)
 			xhr.send(body)
 		} else {
 			xhr.setRequestHeader('Content-Type', 'application/json')
-			xhr.setRequestHeader('Content-Encoding', 'gzip')
-			xhr.send(pako.gzip(JSON.stringify(body), { to: 'string' }))
+			xhr.send(JSON.stringify(body))
 		}
 	} else {
 		xhr.send()
 	}
+}
+
+export function doLogout(){
+	//TODO
 }`
 
-	apiTemplate = `import {apiRequest, ErrorCode} from "./apiRequest"
+	apiTemplate = `import {apiRequest, ErrorCode} from "./api"
 
 export class {{with .Info}}{{.Title}}{{end}} { {{with .Service}}{{range .Routes}}
 	/** {{.Summary}}{{if ne .Desc ""}}
@@ -113,9 +113,9 @@ func genBase(dir string, api *spec.ApiSpec) error {
 		return e
 	}
 
-	path := filepath.Join(dir, "apiRequest.ts")
+	path := filepath.Join(dir, "api.ts")
 	if _, e := os.Stat(path); e == nil {
-		log.Println("apiRequest.ts already exists, skipped it.")
+		log.Println("api.ts already exists, skipped it.")
 		return nil
 	}
 
@@ -126,7 +126,7 @@ func genBase(dir string, api *spec.ApiSpec) error {
 	}
 	defer file.Close()
 
-	t, e := template.New("apiRequest.ts").Parse(apiBaseTemplate)
+	t, e := template.New("api.ts").Parse(apiBaseTemplate)
 	if e != nil {
 		log.Println(e)
 		return e

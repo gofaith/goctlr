@@ -1,9 +1,12 @@
 package gingen
 
 import (
+	"bytes"
 	"fmt"
 	goformat "go/format"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,6 +17,38 @@ import (
 	"github.com/gofaith/goctlr/api/util"
 	goctlutil "github.com/gofaith/goctlr/util"
 )
+
+func ReplaceLine(file string, prefix string, replacement string) error {
+	b, e := ioutil.ReadFile(file)
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+	out := new(bytes.Buffer)
+
+	for _, s := range strings.Split(string(b), "\n") {
+		if strings.HasPrefix(s, prefix) {
+			if s == replacement {
+				return nil
+			}
+			s = replacement
+		}
+		out.WriteString(s + "\n")
+	}
+
+	fo, e := os.OpenFile(file, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+	defer fo.Close()
+	_, e = fo.Write(out.Bytes())
+	if e != nil {
+		log.Println(e)
+		return e
+	}
+	return nil
+}
 
 func getParentPackage(dir string) (string, error) {
 	absDir, err := filepath.Abs(dir)

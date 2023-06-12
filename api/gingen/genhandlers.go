@@ -3,6 +3,7 @@ package gingen
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"path"
 	"path/filepath"
 	"strings"
@@ -63,6 +64,12 @@ func doGenToFile(dir, handler string, group spec.Group, route spec.Route) error 
 		return err
 	}
 	if !created {
+		e := ReplaceLine(path.Join(dir, folderPath, filename), "const "+handler+"Path = \"", fmt.Sprintf(`const %sPath = "%s"`, handler, route.Path))
+		if e != nil {
+			log.Println(e)
+			return e
+		}
+
 		return nil
 	}
 	defer fp.Close()
@@ -74,6 +81,7 @@ func doGenToFile(dir, handler string, group spec.Group, route spec.Route) error 
 		"handlerName": handler,
 		"request":     route.RequestType.Name,
 		"response":    route.ResponseType.Name,
+		"route":       route.Path,
 	})
 	if err != nil {
 		return nil
