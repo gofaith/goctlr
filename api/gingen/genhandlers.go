@@ -26,7 +26,7 @@ const {{.handlerName}}Path = "{{.route}}"
 
 func {{.handlerName}}(c *gin.Context) { {{if ne .request ""}}
 	var r types.{{.request}}
-	e := c.ShouldBind(&r){{end}}
+	e := c.BindJSON(&r){{end}}
 {{if ne .response ""}}
 	var res types.{{.response}}
 {{end}}
